@@ -159,7 +159,7 @@ xcopy "$(ProjectDir)libheif\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -268,7 +268,7 @@ xcopy "$(ProjectDir)libheif\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>
       </DebugInformationFormat>
@@ -381,7 +381,12 @@ xcopy "$(ProjectDir)bit7z\lib\x64\Release\*.dll" "$(ProjectDir)$(OutDir)" /Y /D<
     <ClCompile Include="Tooltip.cpp" />
     <ClCompile Include="UnsharpMaskPanel.cpp" />
     <ClCompile Include="WndButtonPanel.cpp" />
-    <ClCompile Include="zip\zip.c" />
+    <ClCompile Include="zip\zip.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ZoomNavigator.cpp" />
     <ClCompile Include="EXIFDisplayCtl.cpp" />
     <ClCompile Include="HelpDisplayCtl.cpp" />
