@@ -126,6 +126,7 @@ Minus		12200	//ZOOM_DEC: zoom out
 Dash		12200
 Ctrl+Down	12200
 Ctrl+Z		12300	//ZOOM_MODE: toggle zoom mode
+Shift+Z		12301	//CLICK_TO_ZOOM_MODE: toggle click-to-zoom mode
 //no_hotkey	12500	//AUTO_ZOOM_FIT_NO_ZOOM: set auto zoom mode fit to screen, never zoom
 //no_hotkey	12510	//AUTO_ZOOM_FILL_NO_ZOOM: set auto zoom mode fill screen, never zoom
 //no_hotkey	12520	//AUTO_ZOOM_FIT: set auto zoom mode fit to screen

@@ -258,7 +258,9 @@ private:
 	double m_dZoomAtResizeStart; // zoom factor when user started resizing JPEGView main window
 	double m_dZoomMult;
 	bool m_bZoomMode;
-	bool m_bZoomModeOnLeftMouse;
+	bool m_bZoomModeOnLeftMouse; //drag-to-zoom mode
+	bool m_bZoomOnClick; //click-to-zoom feature
+	bool m_bZoomed; //transient flag to indicate that zoom has occurred during a left mouse down
 	Helpers::EAutoZoomMode m_eAutoZoomModeWindowed;
 	Helpers::EAutoZoomMode m_eAutoZoomModeFullscreen;
 	Helpers::EAutoZoomMode m_autoZoomFitToScreen;
@@ -376,6 +378,7 @@ private:
 	void AdjustContrast(double dInc);
 	void AdjustSharpen(double dInc);
 	void PerformZoom(double dValue, bool bExponent, bool bZoomToMouse, bool bAdjustWindowToImage);
+	void MaybeZoomOnClick();
 	void ZoomToSelection();
 	double GetZoomFactorForFitToScreen(bool bFillWithCrop, bool bAllowEnlarge);
 	CProcessParams CreateProcessParams(bool bNoProcessingAfterLoad);

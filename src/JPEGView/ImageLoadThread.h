@@ -6,6 +6,7 @@
 #include <gdiplus.h>
 #include "avif/avif.h"
 #include <vector>
+#include <map>
 
 class CJPEGImage;
 class ZipEntry;
@@ -105,6 +106,7 @@ private:
 	CString m_sLastZipFileName; // Only for ZIP files
 	int m_nLastZipIndex, m_nZipCount;
 	std::vector<ZipEntry> zipEntries;
+	std::map<int, bool> zipIgnoreIndices;
 
 	virtual void ProcessRequest(CRequestBase& request);
 	virtual void AfterFinishProcess(CRequestBase& request);
@@ -119,6 +121,7 @@ private:
 	void ProcessReadJPEGRequest(CRequest * request);
 	void ProcessReadPNGRequest(CRequest* request);
 	void ProcessReadAVIFRequest(CRequest* request);
+	bool ValidateZipFrameIndex(int nInitialIndex, int &nFrameIndex);
 	void ProcessReadZipRequest(CRequest* request);
 	void ProcessReadBMPRequest(CRequest * request);
 	void ProcessReadTGARequest(CRequest * request);

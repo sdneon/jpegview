@@ -220,6 +220,11 @@ CSettingsProvider::CSettingsProvider(void) {
 	m_bWrapAroundFolder = GetBool(_T("WrapAroundFolder"), true);
 	m_bWindowAlwaysOnTopOnStartup = GetBool(_T("WindowAlwaysOnTopOnStartup"), false);
 	m_zoomPauseFactor = GetInt(_T("ZoomPausePercent"), 100, 0, 6553500) / 100.0;  // can't have a % larger than the MAX_IMAGE_DIMENSION %, and convert to a scale factor (double/double division) only once
+	m_dZoomOnClickFactor = GetDouble(_T("ClickToZoomFactor"), 4.0, -1.0, 100.0);
+	if (m_dZoomOnClickFactor <= 1.0)
+	{
+		m_dZoomOnClickFactor = -1.0;
+	}
 	m_bSaveWithoutPrompt = GetBool(_T("OverrideOriginalFileWithoutSaveDialog"), false);
 	m_bTrimWithoutPromptLosslessJPEG = GetBool(_T("TrimWithoutPromptLosslessJPEG"), false);
 	m_bAllowFileDeletion = GetBool(_T("AllowFileDeletion"), true);

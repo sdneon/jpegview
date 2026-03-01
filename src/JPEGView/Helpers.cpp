@@ -772,7 +772,8 @@ EImageFormat GetImageFormat(LPCTSTR sFileName) {
 		} else if (_tcsicmp(sEnding, _T("AVIF")) == 0) {
 			return IF_AVIF;
 		} else if ((_tcsicmp(sEnding, _T("ZIP")) == 0) || (_tcsicmp(sEnding, _T("CBZ")) == 0)
-			|| (_tcsicmp(sEnding, _T("7Z")) == 0) || (_tcsicmp(sEnding, _T("CB7")) == 0)) {
+			|| (_tcsicmp(sEnding, _T("7Z")) == 0) || (_tcsicmp(sEnding, _T("CB7")) == 0)
+			|| (_tcsicmp(sEnding, _T("KRA")) == 0)) {
 			return IF_ZIP;
 		} else if (_tcsicmp(sEnding, _T("QOI")) == 0) {
 			return IF_QOI;

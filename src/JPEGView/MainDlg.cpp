@@ -185,6 +185,7 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_bMouseTracking(false),
 	m_nLastAnimationOffset(0),
 	m_nExpectedNextAnimationTickCount(0),
+	m_bZoomed(false),
 	m_bInputMode(false)
 {
 	CSettingsProvider& sp = CSettingsProvider::This();
@@ -243,6 +244,7 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_dZoomAtResizeStart = 1.0;
 	m_bZoomMode = false;
 	m_bZoomModeOnLeftMouse = false;
+	m_bZoomOnClick = CSettingsProvider::This().ZoomOnClickFactor() > 1.0;
 	m_bUserZoom = false;
 	m_bUserPan = false;
 	m_bMovieMode = false;
@@ -1103,13 +1105,38 @@ LRESULT CMainDlg::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+void CMainDlg::MaybeZoomOnClick()
+{
+	if (m_bZoomOnClick) //click-to-zoom feature
+	{
+		if (m_bMovieMode && (m_nCurrentTimeout > 0))
+		{
+			::KillTimer(this->m_hWnd, SLIDESHOW_TIMER_EVENT_ID);
+			::SetTimer(this->m_hWnd, SLIDESHOW_TIMER_EVENT_ID, m_nCurrentTimeout, NULL);
+		}
+		PerformZoom(m_dZoom * CSettingsProvider::This().ZoomOnClickFactor(), false, true, false);
+		m_bZoomed = false;
+	}
+}
+
 LRESULT CMainDlg::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	bool bAllowZoomOnClick = !m_bZoomed;
+	m_bZoomed = false;
 	if (m_bZoomMode) {
 		m_bZoomMode = false;
 		AdjustWindowToImage(false);
 		Invalidate(FALSE);
+		if (bAllowZoomOnClick)
+		{
+			MaybeZoomOnClick();
+		}
 	} else if (m_bDragging) {
+		bAllowZoomOnClick = !m_bDoDragging;
 		EndDragging();
+		if (bAllowZoomOnClick)
+		{
+			MaybeZoomOnClick();
+		}
 	} else if (m_pCropCtl->IsCropping()) {
 		m_pCropCtl->EndCropping(m_bSingleZoom);
 		if (m_bSingleZoom)
@@ -2552,6 +2579,11 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 			{
 				m_pNavPanelCtl->GetNavPanel()->GetBtnSelectMode()->SetActive(m_bSelectMode = false);
 			}
+			SetToast(m_bZoomModeOnLeftMouse ? _T("Enabled: Drag to Zoom") : _T("Disabled : Drag to Zoom"));
+			break;
+		case IDM_CLICK_TO_ZOOM_MODE:
+			m_bZoomOnClick = !m_bZoomOnClick;
+			SetToast(m_bZoomOnClick ? _T("Enabled: Click to Zoom") : _T("Disabled : Click to Zoom"));
 			break;
 		case IDM_AUTO_ZOOM_FIT_NO_ZOOM:
 		case IDM_AUTO_ZOOM_FILL_NO_ZOOM:
@@ -3526,6 +3558,7 @@ void CMainDlg::AdjustSharpen(double dInc) {
 }
 
 void CMainDlg::PerformZoom(double dValue, bool bExponent, bool bZoomToMouse, bool bAdjustWindowToImage) {
+	m_bZoomed = true;
 	double dOldZoom = m_dZoom;
 	m_bUserZoom = true;
 	m_isUserFitToScreen = false;
