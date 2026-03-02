@@ -381,6 +381,7 @@ xcopy "$(ProjectDir)bit7z\lib\x64\Release\*.dll" "$(ProjectDir)$(OutDir)" /Y /D<
     <ClCompile Include="Tooltip.cpp" />
     <ClCompile Include="UnsharpMaskPanel.cpp" />
     <ClCompile Include="WndButtonPanel.cpp" />
+    <ClCompile Include="ZipHandler.cpp" />
     <ClCompile Include="zip\zip.c" />
     <ClCompile Include="ZoomNavigator.cpp" />
     <ClCompile Include="EXIFDisplayCtl.cpp" />

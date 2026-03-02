@@ -7,9 +7,20 @@
 #include "avif/avif.h"
 #include <vector>
 #include <map>
+#include "bit7z/include/bittypes.hpp"
 
 class CJPEGImage;
-class ZipEntry;
+
+class ZipEntry
+{
+public:
+	CString ext;
+	unsigned int index;
+	unsigned long long size;
+
+	ZipEntry(const char* a_pchName, unsigned int a_index, unsigned long long a_size);
+	ZipEntry(bit7z::tstring a_ext, unsigned int a_index, unsigned long long a_size);
+};
 
 // returned image data by CImageLoadThread.GetLoadedImage() method
 class CImageData
@@ -106,7 +117,6 @@ private:
 	CString m_sLastZipFileName; // Only for ZIP files
 	int m_nLastZipIndex, m_nZipCount;
 	std::vector<ZipEntry> zipEntries;
-	std::map<int, bool> zipIgnoreIndices;
 
 	virtual void ProcessRequest(CRequestBase& request);
 	virtual void AfterFinishProcess(CRequestBase& request);
