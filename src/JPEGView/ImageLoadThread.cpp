@@ -553,13 +553,6 @@ void CImageLoadThread::DeleteCachedAvifDecoder() {
 	m_sLastAvifFileName.Empty();
 }
 
-void CImageLoadThread::DeleteCachedZip()
-{
-	m_sLastZipFileName.Empty();
-	m_nLastZipIndex = -1; m_nZipCount = 0;
-	zipEntries.clear();
-}
-
 void CImageLoadThread::ProcessReadJPEGRequest(CRequest* request) {
 	HANDLE hFile = ::CreateFile(request->FileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {

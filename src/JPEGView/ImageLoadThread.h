@@ -115,7 +115,7 @@ private:
 	CString m_sLastAvifFileName; // Only for animated AVIF files
 	avifDecoder *m_avifDecoder;
 	CString m_sLastZipFileName; // Only for ZIP files
-	int m_nLastZipIndex, m_nZipCount;
+	int m_nZipCount;
 	std::vector<ZipEntry> zipEntries;
 
 	virtual void ProcessRequest(CRequestBase& request);
