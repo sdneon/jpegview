@@ -533,6 +533,9 @@
 					<Component Id="rawDLL" Guid="e469088b-ab00-43cd-a5eb-57f09a6cc3b2">
 						<File Id="libraw.dll" Name="libraw.dll" Source="..\JPEGView\libraw\bin64\libraw.dll" />
 					</Component>
+					<Component Id="svgDLL" Guid="1c7d073b-6347-4206-abce-2cd3f407c8e8">
+						<File Id="lunasvg.dll" Name="lunasvg.dll" Source="..\JPEGView\lunasvg\bin64\lunasvg.dll" />
+					</Component>
 
 				    <Component Id="apimswincorefilel120DLL" Guid="834081b5-0084-4948-979a-00015e7b5f87">
 					<File Id="apimswincorefilel120.dll" Name="api-ms-win-core-file-l1-2-0.dll" Source="..\JPEGView\vcredist\api-ms-win-core-file-l1-2-0.dll"  KeyPath="yes" />
