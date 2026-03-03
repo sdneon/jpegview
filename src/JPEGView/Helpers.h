@@ -122,17 +122,18 @@ namespace Helpers {
 		if (alpha == 0) {
 			return (bg_r << 16) + (bg_g << 8) + (bg_b);
 		} else {
-			uint8 r = (pixel >> 16) & 0xFF;
-			uint8 g = (pixel >>  8) & 0xFF;
-			uint8 b = (pixel      ) & 0xFF;
-			uint8 a = alpha >> 24;
-			uint8 one_minus_a = 255 - a;
+			uint32 a = alpha >> 24;
+			uint32 one_minus_a = 255 - a;
+
+			uint32 vr = (((pixel >> 16) & 0xFF) * a + bg_r * one_minus_a) + 128;
+			uint32 vg = (((pixel >> 8) & 0xFF) * a + bg_g * one_minus_a) + 128;
+			uint32 vb = ((pixel & 0xFF) * a + bg_b * one_minus_a) + 128;
 
 			return
-				0xFF000000 + 
-				(  (uint8)(((r * a + bg_r * one_minus_a) / 255.0) + 0.5) << 16) +
-				(  (uint8)(((g * a + bg_g * one_minus_a) / 255.0) + 0.5) <<  8) + 
-				(  (uint8)(((b * a + bg_b * one_minus_a) / 255.0) + 0.5)      );
+				0xFF000000 |
+				(((vr + (vr >> 8)) >> 8) << 16) |
+				(((vg + (vg >> 8)) >> 8) << 8) |
+				(((vb + (vb >> 8)) >> 8));
 		}
 }
 

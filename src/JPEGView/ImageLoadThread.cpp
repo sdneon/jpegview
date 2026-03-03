@@ -63,14 +63,18 @@ static inline uint32 WebpAlphaBlendBackground(uint32 pixel, uint32 backgroundCol
 		uint8 bg_r = GetRValue(backgroundColor);
 		uint8 bg_g = GetGValue(backgroundColor);
 		uint8 bg_b = GetBValue(backgroundColor);
-		uint8 a = alpha >> 24;
-		uint8 one_minus_a = 255 - a;
+		uint32 a = alpha >> 24;
+		uint32 one_minus_a = 255 - a;
+
+		uint32 vr = (((pixel >> 16) & 0xFF) * a + bg_r * one_minus_a) + 128;
+		uint32 vg = (((pixel >> 8) & 0xFF) * a + bg_g * one_minus_a) + 128;
+		uint32 vb = ((pixel & 0xFF) * a + bg_b * one_minus_a) + 128;
 
 		return
-			0xFF000000 +
-			((uint8)(((r * a + bg_r * one_minus_a) / 255.0) + 0.5)) +
-			((uint8)(((g * a + bg_g * one_minus_a) / 255.0) + 0.5) << 8) +
-			((uint8)(((b * a + bg_b * one_minus_a) / 255.0) + 0.5) << 16);
+			0xFF000000 |
+			(((vr + (vr >> 8)) >> 8) << 16) |
+			(((vg + (vg >> 8)) >> 8) << 8) |
+			(((vb + (vb >> 8)) >> 8));
 	}
 }
 
