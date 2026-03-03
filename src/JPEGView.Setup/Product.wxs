@@ -218,6 +218,10 @@
 			<Feature Id="FeatureCBZ" Title="Manga Support (CBZ, CB7)">
 				<ComponentRef Id="sevenZipDLL"/>
 			</Feature>
+			<Feature Id="FeatureSVG" Title="Scalable Vector Graphics Support">
+				<ComponentRef Id="svgDLL"/>
+				<ComponentRef Id="sevenZipDLL"/>
+			</Feature>
 			<!-- dcraw is compiled into JPEGView, but doesn't support the latest (modern) camera formats -->
 			<Feature Id="FeatureRAW" Title="Camera RAW Files Support (modern cameras)">
 				<ComponentRef Id="rawDLL"/>

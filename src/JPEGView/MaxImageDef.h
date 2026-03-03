@@ -51,6 +51,12 @@ const unsigned int MAX_IMAGE_PIXELS = 65535 * 65535;
 const unsigned int MAX_IMAGE_PIXELS = 1024 * 1024 * 100;
 #endif
 
+#ifdef _WIN64
+const unsigned int MAX_SVG_FILE_SIZE = 1024 * 1024 * 50;
+#else
+const unsigned int MAX_SVG_FILE_SIZE = 1024 * 1024 * 20;
+#endif
+
 // That must not be bigger than 65535 due to internal limitations
 //
 // unbounding (>65535) this causes crashes if HighQualityResampling=true

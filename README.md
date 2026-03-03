@@ -23,6 +23,7 @@ JPEGView has built-in support the following formats:
   * And probably anything 7zip can open.
     * Krita (KRA). 
   * Valid within are a big subset of above image formats.
+* Scalable Vector Graphics (SVG, SVGZ).
 
 Many additional formats are supported by Windows Imaging Component (WIC)
 
@@ -194,7 +195,7 @@ The new default is **panning** mode.
 
 Currently, alpha channel appears to be blended into RGB pixels. Thus, alpha data is 'lost', and won't be saved. This is done in `LoadImageThread.cpp`'s `WebpAlphaBlendBackground()`. CJPEGImage does not seem to bother with alpha channel.
 
-For now, added ability to toggle transparency between checkerboard pattern and solid colour background, via SHIFT-V hotkey. Update your `KeyMap.txt` as usual.
+For now, added ability to toggle transparency between checkerboard pattern and solid colour background, via SHIFT+V hotkey. Update your `KeyMap.txt` as usual.
 
 Now calls the blend alpha for all image types.
 
@@ -347,7 +348,7 @@ These are added in `JPEGView.vcxproj`'s configuration.
 
 Simply build using the VS solution file.
 
-## [Experimental WIP] Browse Manga/Comics
+## Browse Manga/Comics
 Support viewing manga/comics in CBZ archives from v1.2.60.
 * Image formats: JXL, JPG, PNG, WEBP, AVIF/HEIF, QOI, BMP, RAW.
 * Uses [kuba zip](https://github.com/kuba--/zip) which wraps around the minimal 1-file [miniz zip library](https://github.com/richgel999/miniz).
@@ -367,6 +368,12 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
   * Removed ZIP from file (extension) filter to avoid trying to read non-comics archives. Added CB7 to file filters.
   * Pre-built bit7z DLL is without auto format detection! Thus, needed to build our own copy with BIT7Z_AUTO_FORMAT option enabled.
     * Building bit7z is reasonably easy. Use CMake to configure it with BIT7Z_AUTO_FORMAT enabled, and various options as desired. Generate VS project files and build.
+* Also check out KrokusPokus's [JPEGView_L fork](https://github.com/KrokusPokus/JPEGView_L) with enhancements comic reading and lineart.
+
+## Scalable Vector Graphics
+Support SVG from v1.2.90, thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/).
+* Couldn't build without the specific distro that provides zlib z_stream, so modified to use bit7z instead.
+* Changed to transparent background by default. Use SHIFT+V to toggle transpency mode if image is not clear.
 
 ## ICO Image Format
 ICO file can contain multiple icons of various sizes.
@@ -470,3 +477,4 @@ Thanks to [sylikc](https://github.com/sylikc), [qbnu](https://github.com/qbnu) e
 Thanks to Alliance for Open Media for [libavif](https://github.com/AOMediaCodec/libavif/) + [aom](https://aomedia.googlesource.com/aom) for AVIF image read/write.
 Thanks to [kuba zip](https://github.com/kuba--/zip) and [miniz](https://github.com/richgel999/miniz), the *single file* zip library!
 Thanks to [rikyoz's bit7z](https://github.com/rikyoz/bit7z) for very easy to use wrapper for 7zip.
+Thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/) illustrating SVG support, and sammycage for its underlying [lunasvg](https://github.com/sammycage/lunasvg).

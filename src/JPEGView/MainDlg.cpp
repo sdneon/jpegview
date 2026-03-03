@@ -1105,7 +1105,7 @@ LRESULT CMainDlg::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
-void CMainDlg::MaybeZoomOnClick()
+void CMainDlg::MaybeZoomOnClick(bool shift)
 {
 	if (m_bZoomOnClick) //click-to-zoom feature
 	{
@@ -1114,12 +1114,14 @@ void CMainDlg::MaybeZoomOnClick()
 			::KillTimer(this->m_hWnd, SLIDESHOW_TIMER_EVENT_ID);
 			::SetTimer(this->m_hWnd, SLIDESHOW_TIMER_EVENT_ID, m_nCurrentTimeout, NULL);
 		}
-		PerformZoom(m_dZoom * CSettingsProvider::This().ZoomOnClickFactor(), false, true, false);
+		double zoomFactor = m_dZoom * CSettingsProvider::This().ZoomOnClickFactor();
+		if (shift) zoomFactor *= 0.5;
+		PerformZoom(zoomFactor, false, true, false);
 		m_bZoomed = false;
 	}
 }
 
-LRESULT CMainDlg::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CMainDlg::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	bool bAllowZoomOnClick = !m_bZoomed;
 	m_bZoomed = false;
 	if (m_bZoomMode) {
@@ -1128,14 +1130,14 @@ LRESULT CMainDlg::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		Invalidate(FALSE);
 		if (bAllowZoomOnClick)
 		{
-			MaybeZoomOnClick();
+			MaybeZoomOnClick(wParam & MK_SHIFT);
 		}
 	} else if (m_bDragging) {
 		bAllowZoomOnClick = !m_bDoDragging;
 		EndDragging();
 		if (bAllowZoomOnClick)
 		{
-			MaybeZoomOnClick();
+			MaybeZoomOnClick(wParam & MK_SHIFT);
 		}
 	} else if (m_pCropCtl->IsCropping()) {
 		m_pCropCtl->EndCropping(m_bSingleZoom);

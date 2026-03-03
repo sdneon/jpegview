@@ -469,6 +469,15 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedAvifDecoder();
 		ProcessReadZipRequest(&rq);
 		break;
+	case IF_SVG:
+		DeleteCachedGDIBitmap();
+		DeleteCachedWebpDecoder();
+		DeleteCachedPngDecoder();
+		DeleteCachedJxlDecoder();
+		DeleteCachedAvifDecoder();
+		DeleteCachedZip();
+		ProcessReadSVGRequest(&rq);
+		break;
 	default:
 		// try with GDI+
 		DeleteCachedWebpDecoder();

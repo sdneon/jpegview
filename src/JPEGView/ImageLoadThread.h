@@ -131,7 +131,6 @@ private:
 	void ProcessReadJPEGRequest(CRequest * request);
 	void ProcessReadPNGRequest(CRequest* request);
 	void ProcessReadAVIFRequest(CRequest* request);
-	bool ValidateZipFrameIndex(int nInitialIndex, int &nFrameIndex);
 	void ProcessReadZipRequest(CRequest* request);
 	void ProcessReadBMPRequest(CRequest * request);
 	void ProcessReadTGARequest(CRequest * request);
@@ -143,6 +142,7 @@ private:
 	void ProcessReadRAWRequest(CRequest * request);
 	void ProcessReadGDIPlusRequest(CRequest * request);
 	void ProcessReadWICRequest(CRequest* request);
+	void ProcessReadSVGRequest(CRequest * request);
 
 	static void SetFileDependentProcessParams(CRequest * request);
 	static bool ProcessImageAfterLoad(CRequest * request);
