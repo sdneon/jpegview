@@ -379,7 +379,7 @@ Support SVG from v1.2.90, thanks to nikai/aviscaerulea's [jpegview-nt fork](http
 
 Support PDF from v1.2.91, thanks to nikai/aviscaerulea too.
 * Modified to browse all pages like comics. Was first page preview only.
-  * WARNING: Not tested on large PDFs especially those containing countless, huge scanned images. Likely to run of memory and abort, as PDF has to be loaded completely into memory, before individual page is rendered as image for viewing when requested.
+  * WARNING: Not tested on large PDFs especially those containing countless, huge scanned images. Likely to run out of memory and abort, as PDF has to be loaded completely into memory, before individual page is rendered as image for viewing when requested.
 
 ## ICO Image Format
 ICO file can contain multiple icons of various sizes.
