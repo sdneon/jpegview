@@ -19,13 +19,15 @@ JPEGView has built-in support the following formats:
   * Olympus (ORF), Panasonic (RW2), Fujifilm (RAF)
   * Sigma (X3F), Pentax (PEF), Minolta (MRW), Kodak (KDC, DCR)
   * A full list is available here: [LibRaw supported cameras](https://www.libraw.org/supported-cameras)
-* Manga/comics container format: CBZ/CB7.
-  * And probably anything 7zip can open.
-    * Krita (KRA). 
-  * Valid within are a big subset of above image formats.
-* Scalable Vector Graphics (SVG, SVGZ).
+* Manga/comics container format: CBZ/CB7
+  * And probably anything 7zip can open
+    * [New] Krita (KRA)
+  * Valid within are a big subset of above image formats
+* [New] Scalable Vector Graphics (SVG, SVGZ)
+* Many additional formats are supported by Windows Imaging Component (WIC)
 
-Many additional formats are supported by Windows Imaging Component (WIC)
+Also supported but not grabbed in file listing, nor shown in slideshow:
+* [New] PDF document.
 
 ### Basic Image Editor
 
@@ -370,10 +372,14 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
     * Building bit7z is reasonably easy. Use CMake to configure it with BIT7Z_AUTO_FORMAT enabled, and various options as desired. Generate VS project files and build.
 * Also check out KrokusPokus's [JPEGView_L fork](https://github.com/KrokusPokus/JPEGView_L) with enhancements comic reading and lineart.
 
-## Scalable Vector Graphics
+## Scalable Vector Graphics & PDF Document
 Support SVG from v1.2.90, thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/).
 * Couldn't build without the specific distro that provides zlib z_stream, so modified to use bit7z instead.
 * Changed to transparent background by default. Use SHIFT+V to toggle transpency mode if image is not clear.
+
+Support PDF from v1.2.91, thanks to nikai/aviscaerulea too.
+* Modified to browse all pages like comics. Was first page preview only.
+  * WARNING: Not tested on large PDFs especially those containing countless, huge scanned images. Likely to run of memory and abort, as PDF has to be loaded completely into memory, before individual page is rendered as image for viewing when requested.
 
 ## ICO Image Format
 ICO file can contain multiple icons of various sizes.
@@ -477,4 +483,4 @@ Thanks to [sylikc](https://github.com/sylikc), [qbnu](https://github.com/qbnu) e
 Thanks to Alliance for Open Media for [libavif](https://github.com/AOMediaCodec/libavif/) + [aom](https://aomedia.googlesource.com/aom) for AVIF image read/write.
 Thanks to [kuba zip](https://github.com/kuba--/zip) and [miniz](https://github.com/richgel999/miniz), the *single file* zip library!
 Thanks to [rikyoz's bit7z](https://github.com/rikyoz/bit7z) for very easy to use wrapper for 7zip.
-Thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/) illustrating SVG support, and sammycage for its underlying [lunasvg](https://github.com/sammycage/lunasvg).
+Thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/) illustrating SVG & PDF support, and sammycage for its underlying [lunasvg](https://github.com/sammycage/lunasvg).

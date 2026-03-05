@@ -48,6 +48,7 @@ enum EImageFormat {
 	IF_TGA,
 	IF_ZIP,
 	IF_SVG,
+	IF_PDF,
 	IF_Unknown
 };
 

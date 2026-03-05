@@ -130,6 +130,8 @@ static EImageFormat GetImageFormat(LPCTSTR sFileName) {
 		return IF_QOI;
 	} else if (header[0] == '8' && header[1] == 'B' && header[2] == 'P' && header[3] == 'S') {
 		return IF_PSD;
+	} else if (header[0] == '%' && header[1] == 'P' && header[2] == 'D' && header[3] == 'F') {
+		return IF_PDF;
 	}
 
 	// default fallback if no matches based on magic bytes
@@ -368,6 +370,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadJPEGRequest(&rq);
 		break;
 	case IF_WindowsBMP:
@@ -377,6 +380,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadBMPRequest(&rq);
 		break;
 	case IF_TGA:
@@ -386,6 +390,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadTGARequest(&rq);
 		break;
 	case IF_WEBP:
@@ -394,6 +399,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadWEBPRequest(&rq);
 		break;
 	case IF_PNG:
@@ -402,6 +408,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadPNGRequest(&rq);
 		break;
 	case IF_JXL:
@@ -410,6 +417,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedPngDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadJXLRequest(&rq);
 		break;
 	case IF_AVIF:
@@ -418,6 +426,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedPngDecoder();
 		DeleteCachedJxlDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadAVIFRequest(&rq);
 		break;
 	case IF_HEIF:
@@ -427,6 +436,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadHEIFRequest(&rq);
 		break;
 	case IF_PSD:
@@ -436,6 +446,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadPSDRequest(&rq);
 		break;
 	case IF_CameraRAW:
@@ -445,6 +456,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadRAWRequest(&rq);
 		break;
 	case IF_QOI:
@@ -454,6 +466,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadQOIRequest(&rq);
 		break;
 	case IF_WIC:
@@ -463,6 +476,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadWICRequest(&rq);
 		break;
 	case IF_ZIP:
@@ -471,6 +485,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedPngDecoder();
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
+		DeleteCachedPdf();
 		ProcessReadZipRequest(&rq);
 		break;
 	case IF_SVG:
@@ -480,7 +495,17 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadSVGRequest(&rq);
+		break;
+	case IF_PDF:
+		DeleteCachedGDIBitmap();
+		DeleteCachedWebpDecoder();
+		DeleteCachedPngDecoder();
+		DeleteCachedJxlDecoder();
+		DeleteCachedAvifDecoder();
+		DeleteCachedZip();
+		ProcessReadPDFRequest(&rq);
 		break;
 	default:
 		// try with GDI+
@@ -489,6 +514,7 @@ void CImageLoadThread::ProcessRequest(CRequestBase& request) {
 		DeleteCachedJxlDecoder();
 		DeleteCachedAvifDecoder();
 		DeleteCachedZip();
+		DeleteCachedPdf();
 		ProcessReadGDIPlusRequest(&rq);
 		break;
 	}

@@ -783,6 +783,8 @@ EImageFormat GetImageFormat(LPCTSTR sFileName) {
 			return IF_WIC;
 		} else if (_tcsicmp(sEnding, _T("SVG")) == 0 || _tcsicmp(sEnding, _T("SVGZ")) == 0) {
 			return IF_SVG;
+		} else if (_tcsicmp(sEnding, _T("PDF")) == 0) {
+			return IF_PDF;
 		} else if (IsInFileEndingList(CSettingsProvider::This().FileEndingsRAW(), sEnding)) {
 			return IF_CameraRAW;
 		}

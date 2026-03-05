@@ -155,7 +155,7 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>libavif;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libavif;libpdfium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -172,8 +172,8 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;Dbghelp.lib;gdiplus.lib;WICLoader.lib;turbojpeg-static.lib;libpng16.lib;zlib.lib;jxl_dec.lib;jxl_threads.lib;heif.lib;libwebp.lib;libwebpdemux.lib;avif.lib;webp.lib;lcms2.lib;libraw.lib;bit7z.lib;lunasvg.lib;plutovg.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>bin\x64\$(Configuration);libavif\lib64;bit7z\lib\x64\$(Configuration);lunasvg\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;Dbghelp.lib;gdiplus.lib;WICLoader.lib;turbojpeg-static.lib;libpng16.lib;zlib.lib;jxl_dec.lib;jxl_threads.lib;heif.lib;libwebp.lib;libwebpdemux.lib;avif.lib;webp.lib;lcms2.lib;libraw.lib;bit7z.lib;lunasvg.lib;plutovg.lib;pdfium.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>bin\x64\$(Configuration);libavif\lib64;bit7z\lib\x64\$(Configuration);lunasvg\lib64;libpdfium\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -193,7 +193,8 @@ xcopy "$(ProjectDir)libheif\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)libraw\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)lcms2\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)bit7z\lib\x64\Release\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
-xcopy "$(ProjectDir)lunasvg\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
+xcopy "$(ProjectDir)lunasvg\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
+xcopy "$(ProjectDir)libpdfium\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -266,7 +267,7 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>libavif;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libavif;libpdfium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -289,8 +290,8 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;gdiplus.lib;WICLoader.lib;turbojpeg-static.lib;libpng16.lib;zlib.lib;jxl_dec.lib;jxl_threads.lib;heif.lib;libwebp.lib;libwebpdemux.lib;avif.lib;webp.lib;lcms2.lib;libraw.lib;bit7z.lib;lunasvg.lib;plutovg.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>bin\x64\$(Configuration);libavif\lib64;bit7z\lib\x64\$(Configuration);lunasvg\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;gdiplus.lib;WICLoader.lib;turbojpeg-static.lib;libpng16.lib;zlib.lib;jxl_dec.lib;jxl_threads.lib;heif.lib;libwebp.lib;libwebpdemux.lib;avif.lib;webp.lib;lcms2.lib;libraw.lib;bit7z.lib;lunasvg.lib;plutovg.lib;pdfium.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>bin\x64\$(Configuration);libavif\lib64;bit7z\lib\x64\$(Configuration);lunasvg\lib64;libpdfium\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -307,7 +308,8 @@ xcopy "$(ProjectDir)libheif\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)libraw\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)lcms2\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
 xcopy "$(ProjectDir)bit7z\lib\x64\Release\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
-xcopy "$(ProjectDir)lunasvg\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
+xcopy "$(ProjectDir)lunasvg\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D
+xcopy "$(ProjectDir)libpdfium\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -346,6 +348,7 @@ xcopy "$(ProjectDir)lunasvg\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command
     <ClCompile Include="MultiMonitorSupport.cpp" />
     <ClCompile Include="NLS.cpp" />
     <ClCompile Include="ParameterDB.cpp" />
+    <ClCompile Include="PDFWrapper.cpp" />
     <ClCompile Include="PNGWrapper.cpp" />
     <ClCompile Include="PrintDlg.cpp" />
     <ClCompile Include="PrintImage.cpp" />

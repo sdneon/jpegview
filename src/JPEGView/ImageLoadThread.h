@@ -126,6 +126,7 @@ private:
 	void DeleteCachedJxlDecoder();
 	void DeleteCachedAvifDecoder();
 	void DeleteCachedZip();
+	void DeleteCachedPdf();
 
 	void BlendAlpha(uint32* pImage32, int nWidth, int nHeight, Helpers::ETransparencyMode TransparencyMode);
 	void ProcessReadJPEGRequest(CRequest * request);
@@ -143,6 +144,7 @@ private:
 	void ProcessReadGDIPlusRequest(CRequest * request);
 	void ProcessReadWICRequest(CRequest* request);
 	void ProcessReadSVGRequest(CRequest * request);
+	void ProcessReadPDFRequest(CRequest * request);
 
 	static void SetFileDependentProcessParams(CRequest * request);
 	static bool ProcessImageAfterLoad(CRequest * request);

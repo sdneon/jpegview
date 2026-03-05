@@ -222,6 +222,9 @@
 				<ComponentRef Id="svgDLL"/>
 				<ComponentRef Id="sevenZipDLL"/>
 			</Feature>
+			<Feature Id="FeaturePDF" Title="PDF Support">
+				<ComponentRef Id="pdfDLL"/>
+			</Feature>
 			<!-- dcraw is compiled into JPEGView, but doesn't support the latest (modern) camera formats -->
 			<Feature Id="FeatureRAW" Title="Camera RAW Files Support (modern cameras)">
 				<ComponentRef Id="rawDLL"/>
@@ -535,6 +538,9 @@
 					</Component>
 					<Component Id="svgDLL" Guid="1c7d073b-6347-4206-abce-2cd3f407c8e8">
 						<File Id="lunasvg.dll" Name="lunasvg.dll" Source="..\JPEGView\lunasvg\bin64\lunasvg.dll" />
+					</Component>
+					<Component Id="pdfDLL" Guid="9045992b-64f5-4eda-b47c-006148037b08">
+						<File Id="libpdfium.dll" Name="libpdfium.dll" Source="..\JPEGView\libpdfium\bin64\pdfium.dll" />
 					</Component>
 
 				    <Component Id="apimswincorefilel120DLL" Guid="834081b5-0084-4948-979a-00015e7b5f87">
