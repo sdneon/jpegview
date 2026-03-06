@@ -60,13 +60,14 @@ public:
 	// (must end with backslash in this case) or a text file containing file names to display.
 	// Supported text file encodings are ANSI, Unicode or UTF-8.
 	// nLevel is increased when recursively create lists for sub-folders
-	CFileList(const CString & sInitialFile, CDirectoryWatcher & directoryWatcher, 
+	CFileList(const CString& sInitialFile, CDirectoryWatcher& directoryWatcher,
 		Helpers::ESorting eInitialSorting, bool isSortedUpcounting, bool bWrapAroundFolder, int nLevel = 0, bool forceSorting = false,
 		int nMinFilesize = 1, bool bHideHidden = false, bool bHideSameName = false);
 	~CFileList();
 
 	// Gets a list of all supported file endings, separated by semicolon
 	static CString GetSupportedFileEndings();
+	static void ResetSupportedFileEndingsList();
 
 	// Reload file list for given file, if NULL for current file
 	void Reload(LPCTSTR sFileName = NULL, bool clearForwardHistory = true);

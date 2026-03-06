@@ -140,7 +140,7 @@ static const TCHAR* csFileEndingsInternal[cnNumEndingsInternal] = {
 static const TCHAR* csFileEndingsRAW = _T("*.pef;*.dng;*.crw;*.nef;*.cr2;*.mrw;*.rw2;*.orf;*.x3f;*.arw;*.kdc;*.nrw;*.dcr;*.sr2;*.raf");
 
 
-static const int MAX_ENDINGS = 48;
+static const int MAX_ENDINGS = 60;
 static int nNumEndings;
 static LPCTSTR* sFileEndings;
 
@@ -179,9 +179,14 @@ static void ParseAndAddFileEndings(LPCTSTR sEndings) {
 
 // Gets all supported file endings, including the ones from WIC.
 // The length of the returned list is nNumEndings
-static LPCTSTR* GetSupportedFileEndingList() {
+static LPCTSTR* GetSupportedFileEndingList(bool bReset = false) {
+	
 	if (sFileEndings == NULL) {
 		sFileEndings = new LPCTSTR[MAX_ENDINGS];
+		bReset = true;
+	}
+	if (bReset)
+	{
 		for (nNumEndings = 0; nNumEndings < cnNumEndingsInternal; nNumEndings++) {
 			sFileEndings[nNumEndings] = csFileEndingsInternal[nNumEndings];
 		}
@@ -191,8 +196,16 @@ static LPCTSTR* GetSupportedFileEndingList() {
 			ParseAndAddFileEndings(sFileEndingsWIC);
 		}
 		ParseAndAddFileEndings(CSettingsProvider::This().FileEndingsRAW());
+
+		if (CSettingsProvider::This().ViewExtras())
+			ParseAndAddFileEndings(CSettingsProvider::This().FileEndingsExtra());
 	}
 	return sFileEndings;
+}
+
+void CFileList::ResetSupportedFileEndingsList()
+{
+	(void)GetSupportedFileEndingList(true);
 }
 
 CFileList::CFileList(const CString & sInitialFile, CDirectoryWatcher & directoryWatcher, 

@@ -114,6 +114,7 @@ F12		12010	//SPAN_SCREENS: span over all screens
 F11		12011	//FULL_SCREEN_MODE: toggle full screen mode
 Shift+F11	12012	//HIDE_TITLE_BAR: toggle hiding window title bar.  Note: in this mode, the window can't be manually resized
 Shift+F12	12013	//ALWAYS_ON_TOP: toggle window mode to always on top
+Shift+P     12014   //IDM_VIEW_EXTRAS: toggle viewing of extra file formats (defined in FileEndingsExtra) like PDF
 //no_hotkey	12020	//ZOOM_400: zoom to 400 %
 //no_hotkey	12030	//ZOOM_200: zoom to 200 %
 //no_hotkey	12040	//ZOOM_100: zoom to 100 %

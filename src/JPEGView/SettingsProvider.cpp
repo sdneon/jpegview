@@ -215,6 +215,8 @@ CSettingsProvider::CSettingsProvider(void) {
 	m_sDefaultSaveFormat = GetString(_T("DefaultSaveFormat"), _T("jpg"));
 	m_sFilesProcessedByWIC = GetString(_T("FilesProcessedByWIC"), _T("*.wdp;*.mdp;*.hdp;*.ico"));
 	m_sFileEndingsRAW = GetString(_T("FileEndingsRAW"), _T("*.pef;*.dng;*.crw;*.nef;*.cr2;*.mrw;*.rw2;*.orf;*.x3f;*.arw;*.kdc;*.nrw;*.dcr;*.sr2;*.raf"));
+	m_sFileEndingsExtra = GetString(_T("FileEndingsExtra"), _T(""));
+	m_bViewExtras = GetBool(_T("ViewExtras"), false);
 	m_nDisplayFullSizeRAW = GetInt(_T("DisplayFullSizeRAW"), 0, 0, 3);
 	m_bCreateParamDBEntryOnSave = GetBool(_T("CreateParamDBEntryOnSave"), true);
 	m_bWrapAroundFolder = GetBool(_T("WrapAroundFolder"), true);

@@ -2543,6 +2543,12 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 			SetToast(m_bAlwaysOnTop? _T("Always on Top"): _T("Not on Top"));
 
 			break;
+		case IDM_VIEW_EXTRAS:
+			CSettingsProvider::This().ToggleViewExtras();
+			SetToast(CSettingsProvider::This().ViewExtras() ? _T("View Extra File Formats") : _T("Hide Extra File Formats"));
+			CFileList::ResetSupportedFileEndingsList();
+			m_pFileList->Reload();
+			break;
 		case IDM_FIT_WINDOW_TO_IMAGE:
 			// Note: If auto fit is on but the window size does not match the image size (due to manual window resizing), restore window to image
 			if (!(m_bAutoFitWndToImage && !IsImageExactlyFittingWindow()))

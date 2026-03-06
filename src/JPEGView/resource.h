@@ -3,7 +3,7 @@
 // Used by JPEGView.RC
 //
 
-#define JPEGVIEW_VERSION "1, 2, 80, 0\0"
+#define JPEGVIEW_VERSION "1, 2, 92, 0\0"
 // title for main window and msgbox so it can be change via actions
 #define JPEGVIEW_TITLE "JPEGView"
 
@@ -254,6 +254,7 @@
 #define IDM_FULL_SCREEN_MODE 12011
 #define IDM_HIDE_TITLE_BAR  12012
 #define IDM_ALWAYS_ON_TOP   12013
+#define IDM_VIEW_EXTRAS     12014
 #define IDM_ZOOM_400        12020
 #define IDM_ZOOM_200		12030
 #define IDM_ZOOM_100		12040

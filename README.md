@@ -52,7 +52,7 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
 * Image formats
   * Read/write **AVIF**, include animated. Dev notes below.
   * View _largest_ icon in **ICO**
-* [Experimental] **Browse manga/comics**
+* **Browse manga/comics**
   * Container format: CBZ/CB7. Within can be JXL, JPG, PNG, WEBP, AVIF/HEIF, QOI, BMP or RAW images; animation ignored.
   * Navigation keys page through images in archive instead of advancing to next file. See 'Navigation' section below.
 * *Default to panning mode*. Dedicated 'Selection mode' can be toggled via remapped 'S' hotkey.
@@ -89,12 +89,13 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
   * [Experimental]: include a mod of [mez0ru's PR for quick image show despite large folder](https://github.com/sylikc/jpegview/pull/172)
   * Span _nearly_ all monitors.
     * No change:
-      * F12: toggles span all monitors, or not.
-      * SHF+F12: toggles always on top.
+      * **F12**: toggles span all monitors, or not.
+      * **SHF+F12**: toggles always on top.
         * New: Override via commandline option `/top` to enable always on top. Use `/top 0` or `/top false` to disable.
-    * CTRL+F12: toggle to next monitor. Now if there are more than 2 monitors (assuming horizontal row), this hotkey toggles in this cycle: monitor #1, #2, ...  #last, all but last `[XX ]`, all but 1st `[ XX]`, and back.
+    * **CTRL+F12**: toggle to next monitor. Now if there are more than 2 monitors (assuming horizontal row), this hotkey toggles in this cycle: monitor #1, #2, ...  #last, all but last `[XX ]`, all but 1st `[ XX]`, and back.
  * F1 with CTRL, SHF or ALT combos can now be used as hotkeys for other commands; only F1 shows the help info.
  * SHF+Z: toggle click to zoom mode, with configurable `ClickToZoomFactor` factor.
+ * **SHF+P**: toggle 'view extras' file formats mode; configurable via `ViewExtras` setting (default: disabled). When enabled, will find and show extra file formats, like **PDF** [Experimental], list configurable via `FileEndingsExtra`.
 
 (Last selectively sync'd up to original's ~6 Jul 2024 updates, with occasional cherry picks going ahead).
 
