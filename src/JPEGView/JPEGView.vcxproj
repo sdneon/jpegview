@@ -178,7 +178,7 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       </ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <DelayLoadDLLs>WICLoader.dll;jxl_dec.dll;jxl_threads.dll;heif.dll;lcms2.dll;libraw.dll;7z.dll;lunasvg.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>WICLoader.dll;jxl_dec.dll;jxl_threads.dll;heif.dll;lcms2.dll;libraw.dll;7z.dll;lunasvg.dll;pdfium.dll</DelayLoadDLLs>
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -295,7 +295,7 @@ xcopy "$(ProjectDir)lcms2\bin\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Command>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <DelayLoadDLLs>WICLoader.dll;jxl_dec.dll;jxl_threads.dll;heif.dll;lcms2.dll;libraw.dll;7z.dll;lunasvg.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>WICLoader.dll;jxl_dec.dll;jxl_threads.dll;heif.dll;lcms2.dll;libraw.dll;7z.dll;lunasvg.dll;pdfium.dll</DelayLoadDLLs>
     </Link>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
