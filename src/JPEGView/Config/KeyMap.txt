@@ -180,4 +180,6 @@ Alt+Plus	15300	//SHARPEN_INC: increase sharpness
 Alt+Equals	15300
 Alt+Minus	15301	//SHARPEN_DEC: decrease sharpness
 Alt+Dash	15301
+Alt+I		15302   //Invert/Negative Colours
+Ctrl+I		15303   //Toggle Invert/Negative Colours Mode
 //no_hotkey	16000	//CONTEXT_MENU: display context menu

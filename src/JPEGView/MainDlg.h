@@ -350,6 +350,8 @@ private:
 	bool m_bSlideShowForward; //direction of slideshow
 	bool m_bWindowBorderless;
 	bool m_bAlwaysOnTop;
+	bool m_bNegativeMode, //enable/disable: negative colours for all image
+		m_bTempSingleNegative; //individual image toggled to negative colours temporarily
 	//Toast stuff
 	HFONT m_hToastFont;
 	CString m_strToast;

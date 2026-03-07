@@ -1,6 +1,6 @@
 # JPEGView - Image Viewer and Editor
 
-This is a mod of [sylikc's official re-release of JPEGView](https://github.com/sylikc/jpegview/) to focus on the _**slideshow aspect and ease of use**_ of the app. Panning is now enabled by default. [AVIF image format](https://avif.io/blog/articles/avif-faq/#%E2%8F%A9generalinformation) support (include animated AVIF) has been added for viewing, and 'save as AVIF'. Latest addition is viewing of manga/comics archives (CBZ/CB7).
+This is a mod of [sylikc's official re-release of JPEGView](https://github.com/sylikc/jpegview/) to focus on the _**slideshow aspect and ease of use**_ of the app. Panning is now enabled by default. [AVIF image format](https://avif.io/blog/articles/avif-faq/#%E2%8F%A9generalinformation) support (include animated AVIF) has been added for viewing, and 'save as AVIF'. Latest addition is viewing of manga/comics archives (CBZ/CB7), SVG & PDF.
 
 ## Description
 
@@ -96,8 +96,11 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
  * F1 with CTRL, SHF or ALT combos can now be used as hotkeys for other commands; only F1 shows the help info.
  * SHF+Z: toggle click to zoom mode, with configurable `ClickToZoomFactor` factor.
  * **SHF+P**: toggle 'view extras' file formats mode; configurable via `ViewExtras` setting (default: disabled). When enabled, will find and show extra file formats, like **PDF** [Experimental], list configurable via `FileEndingsExtra`.
+ * [NEW] **Inverse/Negative Colours**
+   * **ALT+I**: toggle negative colours for current image only.
+   * **CTRL+I**: toggle Negative Image Mode. Affects all images.
 
-(Last selectively sync'd up to original's ~6 Jul 2024 updates, with occasional cherry picks going ahead).
+(Last selectively sync'd up to original's ~6 Jul 2024 updates, with occasional cherry picks going ahead from various authors including [nikai](https://github.com/aviscaerulea/jpegview-nt/)).
 
 ### Slideshow
 
@@ -381,6 +384,12 @@ Support SVG from v1.2.90, thanks to nikai/aviscaerulea's [jpegview-nt fork](http
 Support PDF from v1.2.91, thanks to nikai/aviscaerulea too.
 * Modified to browse all pages like comics. Was first page preview only.
   * WARNING: Not tested on large PDFs especially those containing countless, huge scanned images. Likely to run out of memory and abort, as PDF has to be loaded completely into memory, before individual page is rendered as image for viewing when requested.
+* Using nikai's build of pdfium as is.
+
+### Building lunasvg
+* Download source codes from [lunasvg's Git](https://github.com/sammycage/lunasvg).
+* Use CMake to generate VS project files.
+* Modify to generate DLL, as we don't want to link it in statically since likely won't be viewing SVGs frequently.
 
 ## ICO Image Format
 ICO file can contain multiple icons of various sizes.

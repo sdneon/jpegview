@@ -132,6 +132,10 @@ public:
 	// Returns false if not enough memory is available to perform the operation.
 	bool RotateOriginalPixels(double dRotation, bool bAutoCrop, bool bKeepAspectRatio);
 
+	//Invert colours of original pixels
+	bool InvertColoursOriginalPixels();
+	bool EnsureInvertedColours(bool bInversionDesired);
+
 	// Transform original pixels into horizontal trapezoid. The original pixels are replaced by this operation.
 	// See RotateOriginalPixels() for auto crop parameter and keep aspect ratio parameter.
 	// In all cases the size of the image in pixels is changed by this operation.
@@ -369,6 +373,7 @@ private:
 	__int64 m_nPixelHash;
 	EImageFormat m_eImageFormat, m_eContainerFormat;
 	TJSAMP m_eJPEGChromoSampling;
+	bool m_bColoursInverted;
 
 	// multiframe and GIF animation related data
 	bool m_bIsAnimation;

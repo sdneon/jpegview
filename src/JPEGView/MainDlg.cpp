@@ -186,6 +186,8 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_nLastAnimationOffset(0),
 	m_nExpectedNextAnimationTickCount(0),
 	m_bZoomed(false),
+	m_bNegativeMode(false),
+	m_bTempSingleNegative(false),
 	m_bInputMode(false)
 {
 	CSettingsProvider& sp = CSettingsProvider::This();
@@ -2828,6 +2830,20 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 		case IDM_SHARPEN_DEC:
 			AdjustSharpen((nCommand == IDM_SHARPEN_INC) ? SHARPEN_INC : -SHARPEN_INC);
 			break;
+		case IDM_NEGATIVE_COLOURS:
+			m_pCurrentImage->InvertColoursOriginalPixels();
+			m_bTempSingleNegative = !m_bTempSingleNegative;
+			SetToast((m_bTempSingleNegative ^ m_bNegativeMode)? L"Negative Colours": L"Original Colours");
+			Invalidate();
+			break;
+		case IDM_NEGATIVE_MODE:
+			m_bTempSingleNegative = false;
+			m_bNegativeMode = !m_bNegativeMode;
+			SetToast(m_bNegativeMode? L"ON: Negative Mode": L"OFF: Negative Mode");
+			if (m_pCurrentImage)
+				m_pCurrentImage->EnsureInvertedColours(m_bNegativeMode);
+			Invalidate();
+			break;
 		case IDM_CONTEXT_MENU:
 			BOOL bNotUsed;
 			OnContextMenu(0, 0, (m_nMouseX & 0xFFFF) | ((m_nMouseY & 0xFFFF) << 16), bNotUsed);
@@ -3251,6 +3267,7 @@ void CMainDlg::GotoImage(EImagePosition ePos) {
 }
 
 void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
+	LPCTSTR strPrevImage = m_pFileList->Current();
 	// Timer handling for slideshows
 	if (ePos == POS_NextSlideShow) {
 		if (m_nCurrentTimeout > 0) {
@@ -3324,6 +3341,9 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 
 			if (m_pCurrentImage)
 			{
+				m_bTempSingleNegative = false; //reset when page changes
+				m_pCurrentImage->EnsureInvertedColours(m_bTempSingleNegative ^ m_bNegativeMode);
+
 				//double minimalDisplayTime = CSettingsProvider::This().MinimalDisplayTime();
 				//bool bSynchronize = (nFlags & KEEP_PARAMETERS) == 0;
 				m_nImageRetryCnt = 0;
@@ -3343,7 +3363,8 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 		}
 	}
 	int nFrameIndex = 0;
-	bool bCheckIfSameImage = true;
+	bool bCheckIfSameImage = true,
+		bToasted = false;
 	m_pFileList->SetCheckpoint();
 	CFileList* pOldFileList = m_pFileList;
 	int nOldFrameIndex = (m_pCurrentImage == NULL) ? 0 : m_pCurrentImage->FrameIndex();
@@ -3416,6 +3437,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 			if (m_pFileList)
 			{
 				SetToast("Jumped > " + m_pFileList->CurrentDirectoryNameShort());
+				bToasted = true;
 			}
 			break;
 		}
@@ -3425,12 +3447,16 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 			if (m_pFileList)
 			{
 				SetToast("Jumped < " + m_pFileList->CurrentDirectoryNameShort());
+				bToasted = true;
 			}
 			break;
 		}
 	}
 
-	if (bCheckIfSameImage && (m_pFileList == pOldFileList && nOldFrameIndex == nFrameIndex && !m_pFileList->ChangedSinceCheckpoint())) {
+	if (bCheckIfSameImage && ((m_pFileList == pOldFileList)
+		&& ((nOldFrameIndex == nFrameIndex))
+		&& !m_pFileList->ChangedSinceCheckpoint()))
+	{
 		if (m_bMovieMode && m_bAutoExit)
 			CleanupAndTerminate();
 		else
@@ -3448,7 +3474,45 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 	} else {
 		InitParametersForNewImage();
 	}
-	LPCTSTR strPrevImage = m_pFileList->Current();
+	LPCTSTR strCurImage = m_pFileList->Current();
+	if (strPrevImage != strCurImage)
+		m_bTempSingleNegative = false; //reset when image changes
+	if (!bToasted && strPrevImage && strCurImage)
+	{
+		//detect and toast when folder changes
+		std::wstring sPrev(strPrevImage),
+			sCur(strCurImage);
+		//get parent folders
+		size_t p = sPrev.find_last_of(L"\\");
+		size_t p2 = sCur.find_last_of(L"\\");
+		bool bChanged = p != p2;
+		if (bChanged)
+		{
+			if (p2 != sCur.npos)
+				sCur = sCur.substr(0, p2);
+		}
+		else
+		{
+			if (p != sPrev.npos)
+				sPrev = sPrev.substr(0, p);
+			if (p2 != sCur.npos)
+				sCur = sCur.substr(0, p2);
+			bChanged = sPrev != sCur;
+		}
+		if (bChanged)
+		{
+			p = sCur.find_last_of(L"\\");
+			if (p != sCur.npos)
+				sCur = sCur.substr(p + 1); //get folder name
+			size_t len = sCur.length();
+			if (len > 30)
+				sCur = sCur.substr(0, 10) + L".." + sCur.substr(len - 20, 20);
+			CString text;
+			text.Format(_T("> %s"), sCur.c_str());
+			SetToast(text);
+		}
+	}
+
 	m_pJPEGProvider->NotifyNotUsed(m_pCurrentImage); //this is needed to force refresh for rotation, transparency change, etc.!
 	if (ePos == POS_Current || ePos == POS_AwayFromCurrent) {
 		m_pJPEGProvider->ClearRequest(m_pCurrentImage, ePos == POS_AwayFromCurrent);
@@ -3484,6 +3548,8 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 
 	if (m_pCurrentImage)
 	{
+		m_pCurrentImage->EnsureInvertedColours(m_bTempSingleNegative^ m_bNegativeMode);
+
 		m_nImageRetryCnt = 0;
 		AfterNewImageLoaded(bSynchronize, false, minimalDisplayTime > 0);
 
@@ -4649,5 +4715,4 @@ void CMainDlg::ToggleAlwaysOnTop() {
 		0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE  // causes SetWindowPos to ignore the parameters for top/left/width/height
 	);
-
 }

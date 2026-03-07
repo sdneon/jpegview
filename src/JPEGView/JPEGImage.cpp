@@ -76,6 +76,7 @@ CJPEGImage::CJPEGImage(int nWidth, int nHeight, void* pPixels, void* pEXIFData, 
 	CLocalDensityCorr * pLDC, bool bIsThumbnailImage, CRawMetadata * pRawMetadata)
 	: m_rotationParams{ 0 },
 	m_fColorCorrectionFactorsNull{ 0 },
+	m_bColoursInverted(false),
 	m_eContainerFormat(eContainerFormat)
 {
 	if (nChannels == 3 || nChannels == 4) {
@@ -355,6 +356,50 @@ bool CJPEGImage::RotateOriginalPixels(double dRotation, bool bAutoCrop, bool bKe
 	m_rotationParams.Flags = SetRotationFlag(m_rotationParams.Flags, RFLAG_KeepAspectRatio, bKeepAspectRatio);
 
 	return true;
+}
+
+bool CJPEGImage::InvertColoursOriginalPixels() {
+	InvalidateAllCachedPixelData();
+
+	if ((m_nOriginalChannels != 3) && (m_nOriginalChannels != 4)) {
+		return false;
+	}
+
+	__int64 numPixels = m_nOrigWidth * m_nOrigHeight;
+	uint8* pTargetPixels = new(std::nothrow) uint8[numPixels * 4];
+	if (pTargetPixels == NULL) return false;
+
+	uint8* pOrg = (uint8*)m_pOrigPixels;
+	if (m_nOriginalChannels == 4)
+	{
+		for (__int64 p = 0, i = 0; p < numPixels; ++p)
+		{
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+			pTargetPixels[i] = pOrg[i]; ++i;
+		}
+	}
+	else
+	{
+		for (__int64 p = 0, i = 0; p < numPixels; ++p)
+		{
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+			pTargetPixels[i] = ~pOrg[i]; ++i;
+		}
+	}
+	delete[] m_pOrigPixels;
+	m_pOrigPixels = pTargetPixels;
+	MarkAsDestructivelyProcessed();
+	m_bColoursInverted = !m_bColoursInverted;
+	return true;
+}
+
+bool CJPEGImage::EnsureInvertedColours(bool bInversionDesired) {
+	if (m_bColoursInverted == bInversionDesired)
+		return true;
+	return InvertColoursOriginalPixels();
 }
 
 bool CJPEGImage::TrapezoidOriginalPixels(const CTrapezoid& trapezoid, bool bAutoCrop, bool bKeepAspectRatio) {
