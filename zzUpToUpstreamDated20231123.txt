@@ -1,3 +1,0 @@
-Last sync's against upstream dated:
-20230616
-20231123 (partially merged on 20240427; pending: RAW, EXIF)
