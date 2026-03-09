@@ -188,7 +188,8 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_bZoomed(false),
 	m_bNegativeMode(false),
 	m_bTempSingleNegative(false),
-	m_bInputMode(false)
+	m_bInputMode(false),
+	m_bInputModeForPassword(false)
 {
 	CSettingsProvider& sp = CSettingsProvider::This();
 
@@ -467,6 +468,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_pJPEGProvider = new CJPEGProvider(m_hWnd, NUM_THREADS, READ_AHEAD_BUFFERS);	
 	m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
 		m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode), m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+	PromptForPasswordIfNeeded(m_pFileList->Current());
 	if (m_pCurrentImage != NULL && m_pCurrentImage->IsAnimation()) {
 		StartAnimation();
 	}
@@ -1337,16 +1339,46 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 			m_bInputMode = false;
 			if (m_InputText.GetLength() > 0)
 			{
-				int index = _wtoi(m_InputText) - 1;
-				if (m_pCurrentImage->ContainerHasMultipleImages()
-					&& (index < m_pCurrentImage->NumberOfFrames()) && (index >= 0))
+				bool isPwMode = m_bInputModeForPassword;
+				m_bInputModeForPassword = false; //clear it quickly before timer triggers
+				if (!isPwMode)
 				{
-					SetToast(_T("Jump to #" + m_InputText));
-					GotoImage(POS_Goto_Image_Num, index);
+					int index = _wtoi(m_InputText) - 1;
+					if (m_pCurrentImage->ContainerHasMultipleImages()
+						&& (index < m_pCurrentImage->NumberOfFrames()) && (index >= 0))
+					{
+						SetToast(_T("Jump to #" + m_InputText));
+						GotoImage(POS_Goto_Image_Num, index);
+					}
+					else
+					{
+						SetToast(_T("Invalid image #" + m_InputText));
+					}
 				}
 				else
 				{
-					SetToast(_T("Invalid image #" + m_InputText));
+					CSettingsProvider::This().SetPassword(m_sPassword);
+					//reload image with password
+					if (m_pCurrentImage && m_pCurrentImage->m_bAwaitPassword)
+					{
+						SetToast(L"Reloading image...");
+
+						//how to forcibly purge old image?? without total burn!
+						m_pJPEGProvider->NotifyNotUsed(m_pCurrentImage);
+						m_pJPEGProvider->ClearAllRequests();
+
+						m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
+							m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode),
+							m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+						m_nLastLoadError = GetLoadErrorAfterOpenFile();
+						CheckIfApplyAutoFitWndToImage(true);
+						AfterNewImageLoaded(true, true, false); // synchronize to per image parameters
+						if (m_pCurrentImage && !m_pCurrentImage->m_bIsPlaceHolder)
+							SetToast(L"Reloaded image =)");
+						else
+							SetToast(L"Reload failed =|");
+						Invalidate(false);
+					}
 				}
 			}
 			else
@@ -1354,16 +1386,108 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				SetToast(_T(""));
 			}
 		}
-		else if (wParam >= VK_NUMPAD0 && wParam <= VK_NUMPAD9)
+		else if (!m_bInputModeForPassword)
 		{
-			int ch = wParam - VK_NUMPAD0 + '0';
-			m_InputText += (char)ch;
-			SetToast(_T("Goto #") + m_InputText);
+			if (wParam >= VK_NUMPAD0 && wParam <= VK_NUMPAD9)
+			{
+				int ch = wParam - VK_NUMPAD0 + '0';
+				m_InputText += (char)ch;
+				SetToast(_T("Goto #") + m_InputText);
+			}
+			else if (wParam >= '0' && wParam <= '9')
+			{
+				m_InputText += (char)wParam;
+				SetToast(_T("Goto #") + m_InputText);
+			}
 		}
-		else if (wParam >= '0' && wParam <= '9')
+		else
 		{
-			m_InputText += (char)wParam;
-			SetToast(_T("Goto #") + m_InputText);
+			//password input mode accepts more characters
+
+			//if (bAlt && (wParam == 'S')) //does Not work
+			//if (wParam == VK_TAB)
+			//if (bCtrl && (wParam == 'S'))
+			if ((wParam == VK_TAB)
+				|| (bCtrl && (wParam == 'S')))
+			{
+				//Reveal pw briefly
+				SetToast(_T("Password: ") + m_sPassword);
+				return 1;
+			}
+			if (wParam >= VK_NUMPAD0 && wParam <= VK_NUMPAD9)
+			{
+				m_sPassword += (char)(wParam - VK_NUMPAD0 + '0');
+				m_InputText += '*';
+			}
+			else if (wParam >= '0' && wParam <= '9')
+			{
+				if (!bShift)
+				{
+					m_sPassword += (char)wParam;
+					m_InputText += '*';
+				}
+				else
+				{
+					char keys[] = {')', '!', '@', '#', '$', '%', '^', '&', '*', '('};
+					m_sPassword += keys[wParam - '0'];
+					m_InputText += '*';
+				}
+			}
+			else if (wParam >= 'A' && wParam <= 'Z')
+			{
+				bool bCaps = ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) ^ bShift; //i.e. CapsLock & Shift
+				if (bCaps)
+				{
+					m_sPassword += (char)wParam;
+					m_InputText += '*';
+				}
+				else
+				{
+					m_sPassword += (char)('a' + wParam - 'A');
+					m_InputText += '*';
+				}
+			}
+			else if (wParam == VK_SPACE)
+			{
+				m_sPassword += ' ';
+				m_InputText += '*';
+			}
+			else if ((wParam >= VK_OEM_1) && (wParam <= VK_OEM_3)) //VK_OEM_1 (0xBA), VK_OEM_PLUS, VK_OEM_COMMA, VK_OEM_MINUS, VK_OEM_PERIOD, VK_OEM_2, VK_OEM_3
+			{
+				char keys[] =        { ';', '=', ',', '-', '.', '/', '`'};
+				char keysShifted[] = { ':', '+', '<', '_', '>', '?', '~'};
+				if (bShift)
+					m_sPassword += keysShifted[wParam - VK_OEM_1];
+				else
+					m_sPassword += keys[wParam - VK_OEM_1];
+			}
+			else if ((wParam >= VK_OEM_4) && (wParam <= VK_OEM_7))
+			{
+				char keys[] =        { '[', '\\', ']', '\'' };
+				char keysShifted[] = { '{', '|',  '}', '"' };
+				if (bShift)
+					m_sPassword += keysShifted[wParam - VK_OEM_4];
+				else
+					m_sPassword += keys[wParam - VK_OEM_4];
+			}
+			else if ((wParam >= VK_MULTIPLY) && (wParam <= VK_DIVIDE)) //VK_MULTIPLY (0x6A), VK_ADD (VK_PLUS), VK_SEPARATOR, VK_SUBTRACT (VK_MINUS)K_DECIMAL, VK_DIVIDE
+			{
+				char keys[] = { '*', '+', ',', '-', '.', '/'};
+				m_sPassword += keys[wParam - VK_MULTIPLY];
+			}
+			else if (wParam == VK_OEM_102)
+			{
+				if (bShift)
+					m_sPassword += '|';
+				else
+					m_sPassword += '\\';
+				m_InputText += '*';
+			}
+			//else //add any other symbols
+
+			SetToast(_T("Password: ") + m_InputText);
+			//SetToast(_T("Password: ") + m_sPassword); //DEBUG ONLY
+			//::OutputDebugString(m_sPassword + "\n"); //DEBUG ONLY
 		}
 		return 1;
 	}
@@ -1575,6 +1699,11 @@ LRESULT CMainDlg::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		m_strToast = "";
 		this->Invalidate(FALSE);
 		m_bInputMode = false; //switch off special input mode upon expiry
+		if (m_bInputModeForPassword)
+		{
+			m_bInputModeForPassword = false;
+			SetToast(L"No password confirmed, ignoring image!");
+		}
 	} else if (wParam == ZOOM_TEXT_TIMER_EVENT_ID) {
 	} else {
 		if (!m_pCropCtl->OnTimer((int)wParam)) {
@@ -2012,6 +2141,7 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 				if (m_pCurrentImage && m_pCurrentImage->ContainerHasMultipleImages())
 				{
 					m_bInputMode = true;
+					m_bInputModeForPassword = false;
 					m_InputText = "";
 					SetToast(_T("Goto #") + m_InputText);
 				}
@@ -2933,6 +3063,7 @@ void CMainDlg::OpenFile(LPCTSTR sFileName, bool bAfterStartup) {
 	m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
 		m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode && (bAfterStartup || IsAdjustWindowToImage())),
 		m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+	PromptForPasswordIfNeeded(m_pFileList->Current());
 	m_nLastLoadError = GetLoadErrorAfterOpenFile();
 	if (bAfterStartup) CheckIfApplyAutoFitWndToImage(false);
 	AfterNewImageLoaded(true, false, false);
@@ -3337,6 +3468,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 			m_pCurrentImage = m_pJPEGProvider->RequestImage(m_pFileList, CJPEGProvider::NONE,
 				m_pFileList->Current(), nFrameIndex, procParams,
 				m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+			PromptForPasswordIfNeeded(m_pFileList->Current());
 			m_nLastLoadError = (m_pCurrentImage == NULL) ? ((m_pFileList->Current() == NULL) ? HelpersGUI::FileLoad_NoFilesInDirectory : HelpersGUI::FileLoad_LoadError) : HelpersGUI::FileLoad_Ok;
 
 			if (m_pCurrentImage)
@@ -3541,6 +3673,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 		m_pCurrentImage = m_pJPEGProvider->RequestImage(m_pFileList, (ePos == POS_AwayFromCurrent) ? CJPEGProvider::NONE : eDirection,
 			m_pFileList->Current(), nFrameIndex, procParams,
 			m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+		PromptForPasswordIfNeeded(m_pFileList->Current());
 		m_nLastLoadError = (m_pCurrentImage == NULL) ? ((m_pFileList->Current() == NULL) ? HelpersGUI::FileLoad_NoFilesInDirectory : HelpersGUI::FileLoad_LoadError) : HelpersGUI::FileLoad_Ok;
 	}
 	double minimalDisplayTime = CSettingsProvider::This().MinimalDisplayTime();
@@ -4715,4 +4848,16 @@ void CMainDlg::ToggleAlwaysOnTop() {
 		0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE  // causes SetWindowPos to ignore the parameters for top/left/width/height
 	);
+}
+
+void CMainDlg::PromptForPasswordIfNeeded(LPCTSTR a_pFilepath)
+{
+	if (!m_pCurrentImage || !m_pCurrentImage->m_bAwaitPassword)
+		return;
+	m_bInputMode = true;
+	m_bInputModeForPassword = true;
+	m_InputText = "";
+	m_sPassword = "";
+	m_sPasswordMask = "";
+	SetToast(L"Enter password:");
 }

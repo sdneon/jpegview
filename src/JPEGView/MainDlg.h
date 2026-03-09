@@ -357,7 +357,9 @@ private:
 	CString m_strToast;
 	int m_nImageRetryCnt;
 	bool m_bMouseTracking;
-	bool m_bInputMode;
+	bool m_bInputMode,
+		m_bInputModeForPassword;
+	CString m_sPassword, m_sPasswordMask;
 	CString m_InputText;
 
 	void SetToast(LPCTSTR a_strToast, DWORD a_nDurationMs = 3000);
@@ -414,6 +416,8 @@ private:
 	void StartAnimation();
 	void AdjustAnimationFrameTime();
 	void StopAnimation();
+
+	void PromptForPasswordIfNeeded(LPCTSTR a_pFilepath);
 	void ToggleAlwaysOnTop();
 	CSize ComputeAdjustments(CPoint& offsetsAdjusted, CPoint& offsetsInWin, CPoint& offsetsInImage, CSize& clippedSize);
 	void CropToSelection(bool bLossless);

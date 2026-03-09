@@ -7,6 +7,9 @@
 #include "ProcessParams.h"
 #include "BasicProcessing.h"
 
+//forward declaration
+BOOL IsEncryptedZip(LPCTSTR strFileName);
+
 CJPEGProvider::CJPEGProvider(HWND handlerWnd, int nNumThreads, int nNumBuffers) {
 	m_hHandlerWnd = handlerWnd;
 	m_nNumThread = nNumThreads;
@@ -33,7 +36,7 @@ CJPEGProvider::~CJPEGProvider(void) {
 
 CJPEGImage* CJPEGProvider::RequestImage(CFileList* pFileList, EReadAheadDirection eDirection,
                                         LPCTSTR strFileName, int nFrameIndex, const CProcessParams & processParams,
-                                        bool& bOutOfMemory, bool& bExceptionError) {
+                                        bool& bOutOfMemory, bool& bExceptionError, bool* pbPasswordNeeded) {
 	if (strFileName == NULL) {
 		bOutOfMemory = false;
 		bExceptionError = false;
@@ -48,6 +51,13 @@ CJPEGImage* CJPEGProvider::RequestImage(CFileList* pFileList, EReadAheadDirectio
 	m_eOldDirection = eDirection;
 
 	if (pRequest == NULL) {
+		//Peek into ZIP file types to check for encryption
+		//if (IsEncryptedZip(strFileName))
+		//{
+		//	if (pbPasswordNeeded) *pbPasswordNeeded = true;
+		//	//return 0;
+		//}
+
 		// no request pending for this file, add to request queue and start async
 		pRequest = StartNewRequest(strFileName, nFrameIndex, processParams);
 		// wait with read ahead when direction changed - maybe user just wants to re-see last image

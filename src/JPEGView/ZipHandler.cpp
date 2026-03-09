@@ -55,6 +55,32 @@ BOOL StringEndsWithIgnoreCase(CString& str, CString& end)
 	return find.CompareNoCase(end) == 0;
 }
 
+BOOL IsEncryptedZip(LPCTSTR strFileName)
+{
+	//Check file extension for zip
+	CString filename(strFileName);
+	if (!StringEndsWithIgnoreCase(filename, CString(".cbz"))
+		&& !StringEndsWithIgnoreCase(filename, CString(".cb7"))
+		&& !StringEndsWithIgnoreCase(filename, CString(".kra")))
+	return false;
+
+	//Check zip for encryption
+	BOOL result = false;
+	try
+	{
+		Bit7zLibrary lib{ "7z.dll" };
+		CT2CA pszConvertedAnsiString(filename);
+		std::string zipFilename(pszConvertedAnsiString);
+		result = BitArchiveReader::isHeaderEncrypted(lib, zipFilename, BitFormat::Auto)
+			|| BitArchiveReader::isEncrypted(lib, zipFilename, BitFormat::Auto);
+		if (result) ::OutputDebugString(_T("IsEncryptedZip WRN: Encrypted!"));
+	}
+	catch (const BitException& ex) {
+		::OutputDebugString(_T("bit7z ERR: ")); ::OutputDebugString(CString(ex.what()));
+	}
+	return result;
+}
+
 void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 	bool bSuccess = false;
 	bool bUseCachedDecoder = false,
@@ -78,11 +104,12 @@ void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 		DeleteCachedZip();
 	}
 
-	bool use7z = !(StringEndsWithIgnoreCase(CString(sFileName), CString(".cbz"))); //true;
+	bool use7z = true; // !(StringEndsWithIgnoreCase(CString(sFileName), CString(".cbz"))); //true;
 
 	int bufFilenameLen = request->FileName.GetLength() + 1;
 	char* bufFilename = new char[bufFilenameLen];
 	wcstombs(bufFilename, request->FileName.GetString(), bufFilenameLen);
+	CString password;
 	struct zip_t* zip = NULL;
 	BitArchiveReader* zip7 = NULL;
 	if (!bUseCachedDecoder) {
@@ -91,7 +118,27 @@ void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 			try
 			{
 				Bit7zLibrary lib{ "7z.dll" };
-				zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto);
+				if (!BitArchiveReader::isHeaderEncrypted(lib, bufFilename, BitFormat::Auto)
+					&& !BitArchiveReader::isEncrypted(lib, bufFilename, BitFormat::Auto))
+				{
+					zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto);
+				}
+				else
+				{
+					request->PasswordNeeded = true;
+					password = CSettingsProvider::This().Password();
+					if (password.IsEmpty())
+						::OutputDebugString(_T("bit7z WRN: Encrypted, but no password provided!"));
+					else
+						::OutputDebugString(_T("bit7z INF: Encrypted, using stored password."));
+					CT2CA pszConvertedAnsiString(password);
+					std::string passwordStr(pszConvertedAnsiString);
+					zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto, passwordStr);
+				}
+				if (zip7->isEncrypted() || zip7->hasEncryptedItems())
+				{
+					request->PasswordNeeded = true;
+				}
 
 				for (const auto& item : *zip7) {
 					if (!item.isDir())
@@ -102,10 +149,12 @@ void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 				delete zip7; zip7 = 0; //somehow later extract will fail, unless reopened, so delete 1st
 				m_nZipCount = zipEntries.size();
 			}
-			catch (const BitException&) {
-				//::OutputDebugString(_T("bit7z ERR: ")); ::OutputDebugString(CString(ex.what()));
+			catch (const BitException&ex) {
+				::OutputDebugString(_T("bit7z ERR: ")); ::OutputDebugString(CString(ex.what()));
 				delete zip7; zip7 = 0;
 				delete[] bufFilename;
+
+				request->Image = CJPEGImage::GetPlaceholder();
 				return;
 			}
 		}
@@ -168,7 +217,17 @@ void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 					pBuffer = new(std::nothrow) char[nFileSize];
 					//somehow, has to reopen, else extract fails!
 					Bit7zLibrary lib{ "7z.dll" };
-					zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto);
+					if (!request->PasswordNeeded)
+					{
+						zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto);
+					}
+					else
+					{
+						password = CSettingsProvider::This().Password();
+						CT2CA pszConvertedAnsiString(password);
+						std::string passwordStr(pszConvertedAnsiString);
+						zip7 = new BitArchiveReader(lib, bufFilename, BitFormat::Auto, passwordStr);
+					}
 					zip7->extractTo((byte_t*)pBuffer, nFileSize, z.index);
 					delete zip7; zip7 = 0;
 				}
@@ -176,6 +235,8 @@ void CImageLoadThread::ProcessReadZipRequest(CRequest* request) {
 					::OutputDebugString(_T("bit7z Extract ERR: ")); ::OutputDebugString(CString(ex.what()));
 					delete zip7; zip7 = 0;
 					delete[] bufFilename;
+
+					request->Image = CJPEGImage::GetPlaceholder();
 					return;
 				}
 			}

@@ -141,6 +141,8 @@ public:
 	double ZoomPauseFactor() { return m_zoomPauseFactor; }  // while internally this is represented in doubles, using a whole number percent simplifies it for the user... configuring doubles is not user friendly at all
 	double ZoomOnClickFactor() { return m_dZoomOnClickFactor; }
 	static double ParseTimeInterval(CString &strInterval);
+	CString Password() { return m_sPassword; }
+	void SetPassword(CString newPw) { m_sPassword = newPw; }
 
 	// Returns if a user INI file exists
 	bool ExistsUserINI();
@@ -263,6 +265,7 @@ private:
 	CString m_sFileEndingsExtra;
 	bool m_bViewExtras;
 	int m_nDisplayFullSizeRAW;
+	CString m_sPassword;
 	bool m_bCreateParamDBEntryOnSave;
 	bool m_bWrapAroundFolder;
 	bool m_bSaveWithoutPrompt;

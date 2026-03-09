@@ -90,6 +90,8 @@ private:
 		CProcessParams ProcessParams;
 		bool OutOfMemory;  // load caused an out of memory condition
 		bool ExceptionError;  // an unhandled exception caused the load to fail
+		bool PasswordNeeded;
+		std::string Password;
 	};
 
 	// Request to release image file

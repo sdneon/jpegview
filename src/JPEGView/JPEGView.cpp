@@ -145,6 +145,46 @@ static int ParseCommandLineForTransitionTime(LPCTSTR sCommandLine) {
 	return max(100, min(5000, _ttoi(sTransitionTime + _tcslen(_T("/transitiontime")))));
 }
 
+static void ParseCommandLineForPassword(LPCTSTR sCommandLine) {
+	LPCTSTR sPw = Helpers::stristr(sCommandLine, _T("/pw"));
+	if (sPw == NULL) {
+		return;
+	}
+	//LPCTSTR str = sPw + 4;
+	CString strRemain(sPw + _tcslen(_T("/pw ")));
+	while ((strRemain.GetLength() > 0)
+		&& ((strRemain.GetAt(0) == ' ') || (strRemain.GetAt(0) == '\t')))
+	{
+		strRemain = strRemain.Right(strRemain.GetLength() - 1);
+	}
+	if (strRemain.GetAt(0) == '"')
+	{
+		int pos = strRemain.Find('"', 1);
+		if (pos > 1)
+		{
+			//get pw delimited by pair of '"'s
+			strRemain = strRemain.Right(strRemain.GetLength() - 1); //remove leading '"'
+			CSettingsProvider::This().SetPassword(strRemain.Left(pos - 1));
+		}
+		else
+		{
+			//assume the '"' is part of pw, so grab everything as password!
+			CSettingsProvider::This().SetPassword(strRemain);
+		}
+	}
+	else
+	{
+		int len = strRemain.GetLength();
+		int pos = strRemain.Find(' ', 0),
+			pos2 = strRemain.Find('\t', 0);
+		if (pos < 0) pos = len;
+		if (pos2 < 0) pos2 = len;
+		if (pos2 < pos)
+			pos = pos2;
+		CSettingsProvider::This().SetPassword(strRemain.Left(pos));
+	}
+}
+
 #ifdef DEBUG
 static CRITICAL_SECTION s_lock;
 
@@ -227,6 +267,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	Helpers::ETransitionEffect eTransitionEffect = ParseCommandLineForSlideShowEffect(lpstrCmdLine);
 	int nTransitionTime = ParseCommandLineForTransitionTime(lpstrCmdLine);
 	int nDisplayMonitor = ParseCommandLineForDisplayMonitor(lpstrCmdLine);
+	ParseCommandLineForPassword(lpstrCmdLine);
 
 	// Searches for other instances and terminates them
 	bool bFileLoadedByExistingInstance = false;
