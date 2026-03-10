@@ -22,7 +22,7 @@ public:
 	LRESULT OnConfirmAndClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	CPwDlg(CString pw);
+	CPwDlg(CString pw, CString title);
 	~CPwDlg(void);
 
 	// only valid when dialog confirmed with OK
@@ -33,5 +33,5 @@ private:
 	CButton m_btnCancel;
 	CEdit m_edtPw;
 
-	CString m_pw;
+	CString m_pw, m_title;
 };

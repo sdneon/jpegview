@@ -4,8 +4,9 @@
 #include "MaxImageDef.h"
 #include "Helpers.h"
 
-CPwDlg::CPwDlg(CString pw):
-	m_pw(pw)
+CPwDlg::CPwDlg(CString pw, CString title):
+	m_pw(pw),
+	m_title(title)
 {
 }
 
@@ -13,7 +14,7 @@ CPwDlg::~CPwDlg(void) {
 }
 
 LRESULT CPwDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	this->SetWindowText(CNLS::GetString(_T("Enter Password")));
+	this->SetWindowText(m_title);
 
 	m_btnOk.Attach(GetDlgItem(IDOK));
 	m_btnCancel.Attach(GetDlgItem(IDCANCEL));

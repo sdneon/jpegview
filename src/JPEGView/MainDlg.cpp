@@ -1389,7 +1389,7 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				m_bInputMode = false;
 				m_bInputModeForPassword = false;
 				Invalidate(false); //clear toast
-				CPwDlg dlg(m_sPassword);
+				CPwDlg dlg(m_sPassword, CFileList::ShortName(m_pFileList->CurrentFileTitle()));
 				// Show the dialog as a modal dialog
 				if (dlg.DoModal() == IDOK) {
 					CString password = dlg.GetPw(); // Get the entered password
