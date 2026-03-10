@@ -90,8 +90,6 @@ private:
 		CProcessParams ProcessParams;
 		bool OutOfMemory;  // load caused an out of memory condition
 		bool ExceptionError;  // an unhandled exception caused the load to fail
-		bool PasswordNeeded;
-		std::string Password;
 	};
 
 	// Request to release image file
@@ -119,6 +117,7 @@ private:
 	CString m_sLastZipFileName; // Only for ZIP files
 	int m_nZipCount;
 	std::vector<ZipEntry> zipEntries;
+	bool m_bZipNeedPassword;
 
 	virtual void ProcessRequest(CRequestBase& request);
 	virtual void AfterFinishProcess(CRequestBase& request);

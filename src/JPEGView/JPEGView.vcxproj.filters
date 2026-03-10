@@ -300,6 +300,9 @@
     <ClCompile Include="PDFWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PwDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicProcessing.h">
@@ -673,6 +676,9 @@
     </ClInclude>
     <ClInclude Include="bit7z\include\bitwindows.hpp">
       <Filter>Source Files\bit7z</Filter>
+    </ClInclude>
+    <ClInclude Include="PwDlg.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

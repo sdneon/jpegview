@@ -378,8 +378,13 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
     * Building bit7z is reasonably easy. Use CMake to configure it with BIT7Z_AUTO_FORMAT enabled, and various options as desired. Generate VS project files and build.
 * Also check out KrokusPokus's [JPEGView_L fork](https://github.com/KrokusPokus/JPEGView_L) with enhancements comic reading and lineart.
 
+### Building bit7z
+* Download source codes from [bit7z Git](https://github.com/rikyoz/bit7z).
+* Use CMake to configure with `BIT7Z_AUTO_FORMAT` ticked, and generate VS project files.
+* Change compiler option to /MT (instead of MD) to avoid later JPEGView build conflict.
+
 ### [Experimental] Simple support for opening **_encrypted_** archives
-* Partially tested on some combos, like fully encrypted zip vs content encrypted.
+* Available from v1.20.93. Partially tested on some combos, like fully encrypted zip vs content encrypted.
 * Password entry methods:
   * via program argument input
   ```
@@ -388,13 +393,15 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
   jpegview.exe /pw "password with spaces" image.png
   ```
   * via modified 'Goto comic page' input system, so only simple characters 'direct' from keyboard entry.
+    * Can switch to password entry in dialog box.
 * If no or wrong password is provided, will Not ask for password again. Unless, you purge cache (by cycling through countless images, or something).
 * Hacky implementation owing to complicated async image loading via several classes.
   1. CJPEGImage provides a 'X' (5x5 px) as placeholder initially, when image read fails from wrong passsword.
   2. CMainDlg triggers password input mode.
-     * TAB or CTRL+S: temporarily show/reveal password entered thus far.
-     * ENTER: finish input and reload image.
-     * ESC or timeout (lasts as long as password prompt/toast on screen): cancel.
+     * **CTRL+S**: temporarily show/reveal password entered thus far.
+     * **ENTER**: finish input and reload image.
+     * **ESC** or timeout (lasts as long as password prompt/toast on screen): cancel.
+     * **TAB**: switch to password entry in dialog box.
   3. CMainDlg re-requests image upon receiving password input. A force purge of cached images is performed for now, until figure out how to purge just the placehoder. CJPEGImage does Not store the original request parameters, so can't make it re-request itself just yet.
 * No longer use miniz; switched to bit7z fully as bit7z supports decryption, but not miniz. Hopefully, it doesn't break reading zips, as there may have been some issue in the past for using miniz in lieu of bit7z for zips.
 * Wishlist: proper password input dialog box for full character set.

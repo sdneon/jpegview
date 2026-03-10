@@ -418,6 +418,7 @@ private:
 	void StopAnimation();
 
 	void PromptForPasswordIfNeeded(LPCTSTR a_pFilepath);
+	void ReloadImageWithPw(CString pw);
 	void ToggleAlwaysOnTop();
 	CSize ComputeAdjustments(CPoint& offsetsAdjusted, CPoint& offsetsInWin, CPoint& offsetsInImage, CSize& clippedSize);
 	void CropToSelection(bool bLossless);

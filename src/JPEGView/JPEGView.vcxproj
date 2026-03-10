@@ -354,6 +354,7 @@ xcopy "$(ProjectDir)libpdfium\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Comma
     <ClCompile Include="PrintImage.cpp" />
     <ClCompile Include="ProcessingThreadPool.cpp" />
     <ClCompile Include="PSDWrapper.cpp" />
+    <ClCompile Include="PwDlg.cpp" />
     <ClCompile Include="QOIWrapper.cpp" />
     <ClCompile Include="RAWWrapper.cpp" />
     <ClCompile Include="ReaderBMP.cpp" />
@@ -484,6 +485,7 @@ xcopy "$(ProjectDir)libpdfium\bin64\*.dll" "$(ProjectDir)$(OutDir)" /Y /D</Comma
     <ClInclude Include="ProcessingThreadPool.h" />
     <ClInclude Include="ProcessParams.h" />
     <ClInclude Include="PSDWrapper.h" />
+    <ClInclude Include="PwDlg.h" />
     <ClInclude Include="QOIWrapper.h" />
     <ClInclude Include="RawMetadata.h" />
     <ClInclude Include="RAWWrapper.h" />

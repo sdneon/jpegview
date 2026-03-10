@@ -133,6 +133,9 @@
 #define IDC_PD_ED_BOTTOM                2036
 #define IDC_PD_CM3                      2037
 
+#define IDD_PASSWORD_DIALOG             2100
+#define IDC_EDIT_PASSWORD               2101
+
 #define IDM_DEFAULT_ESC		255
 #define IDM_STOP_MOVIE		1000
 #define IDM_MINIMIZE		1010

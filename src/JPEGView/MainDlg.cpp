@@ -53,6 +53,7 @@
 #include "DirectoryWatcher.h"
 #include "DesktopWallpaper.h"
 #include "PrintImage.h"
+#include "PwDlg.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Constants
@@ -1357,28 +1358,7 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				}
 				else
 				{
-					CSettingsProvider::This().SetPassword(m_sPassword);
-					//reload image with password
-					if (m_pCurrentImage && m_pCurrentImage->m_bAwaitPassword)
-					{
-						SetToast(L"Reloading image...");
-
-						//how to forcibly purge old image?? without total burn!
-						m_pJPEGProvider->NotifyNotUsed(m_pCurrentImage);
-						m_pJPEGProvider->ClearAllRequests();
-
-						m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
-							m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode),
-							m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
-						m_nLastLoadError = GetLoadErrorAfterOpenFile();
-						CheckIfApplyAutoFitWndToImage(true);
-						AfterNewImageLoaded(true, true, false); // synchronize to per image parameters
-						if (m_pCurrentImage && !m_pCurrentImage->m_bIsPlaceHolder)
-							SetToast(L"Reloaded image =)");
-						else
-							SetToast(L"Reload failed =|");
-						Invalidate(false);
-					}
+					ReloadImageWithPw(m_sPassword);
 				}
 			}
 			else
@@ -1404,11 +1384,29 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 		{
 			//password input mode accepts more characters
 
+			if (wParam == VK_TAB)
+			{
+				m_bInputMode = false;
+				m_bInputModeForPassword = false;
+				Invalidate(false); //clear toast
+				CPwDlg dlg(m_sPassword);
+				// Show the dialog as a modal dialog
+				if (dlg.DoModal() == IDOK) {
+					CString password = dlg.GetPw(); // Get the entered password
+					::OutputDebugString(_T("Password is: ") + password + "\n");
+					ReloadImageWithPw(password);
+				}
+				else
+				{
+					// Handle the cancellation
+					::OutputDebugString(_T("Password entry was canceled.\n"));
+				}
+				m_sPassword.Empty();
+				m_sPasswordMask.Empty();
+				return 1;
+			}
 			//if (bAlt && (wParam == 'S')) //does Not work
-			//if (wParam == VK_TAB)
-			//if (bCtrl && (wParam == 'S'))
-			if ((wParam == VK_TAB)
-				|| (bCtrl && (wParam == 'S')))
+			if (bCtrl && (wParam == 'S'))
 			{
 				//Reveal pw briefly
 				SetToast(_T("Password: ") + m_sPassword);
@@ -4860,4 +4858,30 @@ void CMainDlg::PromptForPasswordIfNeeded(LPCTSTR a_pFilepath)
 	m_sPassword = "";
 	m_sPasswordMask = "";
 	SetToast(L"Enter password:");
+}
+
+void CMainDlg::ReloadImageWithPw(CString pw)
+{
+	CSettingsProvider::This().SetPassword(pw);
+	//reload image with password
+	if (m_pCurrentImage && m_pCurrentImage->m_bAwaitPassword)
+	{
+		SetToast(L"Reloading image...");
+
+		//how to forcibly purge old image?? without total burn!
+		m_pJPEGProvider->NotifyNotUsed(m_pCurrentImage);
+		m_pJPEGProvider->ClearAllRequests();
+
+		m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
+			m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode),
+			m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+		m_nLastLoadError = GetLoadErrorAfterOpenFile();
+		CheckIfApplyAutoFitWndToImage(true);
+		AfterNewImageLoaded(true, true, false); // synchronize to per image parameters
+		if (m_pCurrentImage && !m_pCurrentImage->m_bIsPlaceHolder)
+			SetToast(L"Reloaded image =)");
+		else
+			SetToast(L"Reload failed =|");
+		Invalidate(false);
+	}
 }

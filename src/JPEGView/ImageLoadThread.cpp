@@ -302,13 +302,7 @@ CImageLoadThread::~CImageLoadThread(void) {
 
 int CImageLoadThread::AsyncLoad(LPCTSTR strFileName, int nFrameIndex, const CProcessParams& processParams, HWND targetWnd, HANDLE eventFinished) {
 	CRequest* pRequest = new CRequest(strFileName, nFrameIndex, targetWnd, processParams, eventFinished);
-
 	ProcessAsync(pRequest);
-	if (pRequest->PasswordNeeded)
-	{
-		::OutputDebugString(_T("CImageLoadThread::AsyncLoad WRN: Encrypted!"));
-	}
-
 	return pRequest->RequestHandle;
 }
 
