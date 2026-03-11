@@ -526,7 +526,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "neon, sylikc et al"
             VALUE "FileDescription", "JPEGView"
-            VALUE "FileVersion", "1.2.92.0"
+            VALUE "FileVersion", "1.2.93.0"
             VALUE "InternalName", "JPEGView"
             VALUE "LegalCopyright", "Nah! neon 2025; Copyright 2020-2024 Kevin M (sylikc), 2006-2018 David Kleiner"
             VALUE "OriginalFilename", "JPEGView.exe"

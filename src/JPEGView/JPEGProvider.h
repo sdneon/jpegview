@@ -40,7 +40,7 @@ public:
 	// blocks until the image is ready. If not specified otherwise, a read-ahead request for the next image is
 	// created automatically so that the next image will be ready immediately when requested in the future.
 	CJPEGImage* RequestImage(CFileList* pFileList, EReadAheadDirection eDirection, LPCTSTR strFileName, int nFrameIndex,
-		const CProcessParams & processParams, bool& bOutOfMemory, bool& bExceptionError, bool *pbPasswordNeeded = 0);
+		const CProcessParams & processParams, bool& bOutOfMemory, bool& bExceptionError);
 
 	// Notifies that the specified image is no longer used and its memory can be freed.
 	// The CJPEGProvider class may decide to keep the image cached.
