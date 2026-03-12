@@ -1412,7 +1412,17 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				SetToast(_T("Password: ") + m_sPassword);
 				return 1;
 			}
-			if (wParam >= VK_NUMPAD0 && wParam <= VK_NUMPAD9)
+			if (wParam == VK_BACK)
+			{
+				int len = m_InputText.GetLength();
+				if (len > 0)
+				{
+					--len;
+					m_InputText = m_InputText.Left(len);
+					m_sPassword = m_sPassword.Left(len);
+				}
+			}
+			else if (wParam >= VK_NUMPAD0 && wParam <= VK_NUMPAD9)
 			{
 				m_sPassword += (char)(wParam - VK_NUMPAD0 + '0');
 				m_InputText += '*';
