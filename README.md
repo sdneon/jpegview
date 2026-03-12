@@ -394,17 +394,21 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
   ```
   * via modified 'Goto comic page' input system, so only simple characters 'direct' from keyboard entry.
     * Can switch to password entry in dialog box.
-* If no or wrong password is provided, will Not ask for password again. Unless, you purge cache (by cycling through countless images, or something).
-* Hacky implementation owing to complicated async image loading via several classes.
+* Password is remembered for subsequent files in this session only. Never saved to disk.
+* If no or wrong password is provided, will Not ask for password again.
+  * **CTRL+SHIFT+R**: Purge password and reload image. Use to re-enter password, especially for another archive with different password.
+    * Known issue: sometimes fails to trigger. Related to image cache issue (#1). 
+* Hacky implementation owing to complicated async image loading (#1) via several classes.
   1. CJPEGImage provides a 'X' (5x5 px) as placeholder initially, when image read fails from wrong passsword.
   2. CMainDlg triggers password input mode.
      * **CTRL+S**: temporarily show/reveal password entered thus far.
      * **ENTER**: finish input and reload image.
      * **ESC** or timeout (lasts as long as password prompt/toast on screen): cancel.
      * **TAB**: switch to password entry in dialog box.
-  3. CMainDlg re-requests image upon receiving password input. A force purge of cached images is performed for now, until figure out how to purge just the placehoder. CJPEGImage does Not store the original request parameters, so can't make it re-request itself just yet.
+  3. CMainDlg re-requests image upon receiving password input.
+  * #1. CJPEGProvider has a complicated and weird system of cached _requests_ to retrieve images.
+    * Its `NotifyNotUsed(CJPEGImage* pImage)` does nothing when image is NULL, when it should perhaps have been `NotifyNotUsed(filepath, frameIndex)`.
 * No longer use miniz; switched to bit7z fully as bit7z supports decryption, but not miniz. Hopefully, it doesn't break reading zips, as there may have been some issue in the past for using miniz in lieu of bit7z for zips.
-* Wishlist: proper password input dialog box for full character set.
 * For [this suggestion](https://github.com/sylikc/jpegview/issues/301).
 
 ## Scalable Vector Graphics & PDF Document

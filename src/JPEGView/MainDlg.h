@@ -376,7 +376,7 @@ private:
 	void SetAsDefaultViewer();
 	void HandleUserCommands(uint32 virtualKeyCode);
 	void ExecuteUserCommand(CUserCommand* pUserCommand);
-	void GotoImage(EImagePosition ePos, int nFlags);
+	void GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq = false);
 	void AdjustLDC(int nMode, double dInc);
 	void AdjustGamma(double dFactor);
 	void AdjustContrast(double dInc);

@@ -1405,13 +1405,17 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				m_sPasswordMask.Empty();
 				return 1;
 			}
-			//if (bAlt && (wParam == 'S')) //does Not work
-			if (bCtrl && (wParam == 'S'))
+			if (bCtrl)
 			{
-				//Reveal pw briefly
-				SetToast(_T("Password: ") + m_sPassword);
+				if (wParam == 'S')
+				{
+					//Reveal pw briefly
+					SetToast(_T("Password: ") + m_sPassword);
+				}
 				return 1;
 			}
+			if (bAlt)
+				return 1;
 			if (wParam == VK_BACK)
 			{
 				int len = m_InputText.GetLength();
@@ -1598,6 +1602,8 @@ LRESULT CMainDlg::OnSysKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	if (wParam == VK_F4) {
 		CleanupAndTerminate();
 	} else {
+		if (m_bInputMode)
+			return 0; //don't interrupt on-screen input mode
 		int nCommand = m_pKeyMap->GetCommandIdForKey((int)wParam, true, false, bShift);
 		if (nCommand > 0) {
 			ExecuteCommand(nCommand);
@@ -2051,6 +2057,12 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 			break;
 		case IDM_RELOAD:
 			ReloadImage(false);
+			break;
+		case IDM_PURGE_PW_AND_RELOAD:
+			CSettingsProvider::This().SetPassword("");
+			GotoImage(CMainDlg::POS_Current, 0, true);
+			if (!m_pCurrentImage)
+				GotoImage(CMainDlg::POS_Current, 0, true); //try again! somehow 2nd try is needed
 			break;
 		case IDM_PRINT:
 			if (m_pCurrentImage != NULL) {
@@ -3405,7 +3417,7 @@ void CMainDlg::GotoImage(EImagePosition ePos) {
 	GotoImage(ePos, 0);
 }
 
-void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
+void CMainDlg::GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq) {
 	LPCTSTR strPrevImage = m_pFileList->Current();
 	// Timer handling for slideshows
 	if (ePos == POS_NextSlideShow) {
@@ -3475,7 +3487,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 			}
 			m_pCurrentImage = m_pJPEGProvider->RequestImage(m_pFileList, CJPEGProvider::NONE,
 				m_pFileList->Current(), nFrameIndex, procParams,
-				m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+				m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage, bForceNewReq);
 			PromptForPasswordIfNeeded(m_pFileList->Current());
 			m_nLastLoadError = (m_pCurrentImage == NULL) ? ((m_pFileList->Current() == NULL) ? HelpersGUI::FileLoad_NoFilesInDirectory : HelpersGUI::FileLoad_LoadError) : HelpersGUI::FileLoad_Ok;
 
@@ -3680,7 +3692,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags) {
 	} else {
 		m_pCurrentImage = m_pJPEGProvider->RequestImage(m_pFileList, (ePos == POS_AwayFromCurrent) ? CJPEGProvider::NONE : eDirection,
 			m_pFileList->Current(), nFrameIndex, procParams,
-			m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
+			m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage, bForceNewReq);
 		PromptForPasswordIfNeeded(m_pFileList->Current());
 		m_nLastLoadError = (m_pCurrentImage == NULL) ? ((m_pFileList->Current() == NULL) ? HelpersGUI::FileLoad_NoFilesInDirectory : HelpersGUI::FileLoad_LoadError) : HelpersGUI::FileLoad_Ok;
 	}
@@ -4882,8 +4894,9 @@ void CMainDlg::ReloadImageWithPw(CString pw)
 		m_pJPEGProvider->NotifyNotUsed(m_pCurrentImage);
 		m_pJPEGProvider->ClearAllRequests();
 
+		int nFrameIndex = m_pCurrentImage? m_pCurrentImage->FrameIndex(): 0;
 		m_pCurrentImage = m_pJPEGProvider->RequestImage(0, CJPEGProvider::FORWARD,
-			m_pFileList->Current(), 0, CreateProcessParams(!m_bFullScreenMode),
+			m_pFileList->Current(), nFrameIndex, CreateProcessParams(!m_bFullScreenMode),
 			m_bOutOfMemoryLastImage, m_bExceptionErrorLastImage);
 		m_nLastLoadError = GetLoadErrorAfterOpenFile();
 		CheckIfApplyAutoFitWndToImage(true);
