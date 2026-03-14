@@ -70,8 +70,9 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
      * **Left**/**Right**: previous/next image in archive. If already at 1st or last image of archive respectively, will exit archive to previous/next image.
      * **ALT+<Left/Right arrow>**: Jump back/forward 100 images in archive. If overshoot, stop at first/last image in archive.
      * **CTRL+<Left/Right arrow>**: Exit archive to previous/next image file.
-     * **ALT+G**: Enter 'goto image number' mode (toast prompt appears), key in desired number and hit **<ENTER>** to jump to that image in archive. To cancel, hit **<ESCAPE>** or let entry timeout (toast disappears).
+     * **ALT+G**: Enter 'goto page number' mode (toast prompt appears), key in desired number and hit **<ENTER>** to jump to that page in archive. To cancel, hit **<ESCAPE>** or let entry timeout (toast disappears).
      * Changed to **SHIFT+M**: Toggle between marked image and current image.
+  * **ALT+G**: Enter 'goto image number' mode (only when not in manga), to select a specific image number to jump to.
 * Filter
   * Hide small images below `MinFilesize`. **ALT+M** to toggle and reload.
     * Enabled by default if MinFilesize > 0, but auto-disabled if 1st image opened is small (< MinFilesize).

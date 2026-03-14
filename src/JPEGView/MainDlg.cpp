@@ -1345,15 +1345,29 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 				if (!isPwMode)
 				{
 					int index = _wtoi(m_InputText) - 1;
-					if (m_pCurrentImage->ContainerHasMultipleImages()
-						&& (index < m_pCurrentImage->NumberOfFrames()) && (index >= 0))
+					if (m_pCurrentImage->ContainerHasMultipleImages())
 					{
-						SetToast(_T("Jump to #" + m_InputText));
-						GotoImage(POS_Goto_Image_Num, index);
+						if ((index < m_pCurrentImage->NumberOfFrames()) && (index >= 0))
+						{
+							SetToast(_T("Jump to page #" + m_InputText));
+							GotoImage(POS_Goto_Image_Num, index);
+						}
+						else
+						{
+							SetToast(_T("Invalid page #" + m_InputText));
+						}
 					}
 					else
 					{
-						SetToast(_T("Invalid image #" + m_InputText));
+						if ((index < m_pFileList->Size()) && (index >= 0))
+						{
+							SetToast(_T("Jump to image #" + m_InputText));
+							GotoImage(POS_Goto_Image_Num, index);
+						}
+						else
+						{
+							SetToast(_T("Invalid image #" + m_InputText));
+						}
 					}
 				}
 				else
@@ -1378,6 +1392,16 @@ LRESULT CMainDlg::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOO
 			{
 				m_InputText += (char)wParam;
 				SetToast(_T("Goto #") + m_InputText);
+			}
+			else if (wParam == VK_BACK)
+			{
+				int len = m_InputText.GetLength();
+				if (len > 0)
+				{
+					--len;
+					m_InputText = m_InputText.Left(len);
+					SetToast(_T("Goto #") + m_InputText);
+				}
 			}
 		}
 		else
@@ -2158,12 +2182,19 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 		case IDM_GOTO_IMAGE_NUM:
 			if (!m_bInputMode)
 			{
-				if (m_pCurrentImage && m_pCurrentImage->ContainerHasMultipleImages())
+				if (m_pCurrentImage)
 				{
 					m_bInputMode = true;
 					m_bInputModeForPassword = false;
 					m_InputText = "";
-					SetToast(_T("Goto #") + m_InputText);
+					if (m_pCurrentImage->ContainerHasMultipleImages())
+					{
+						SetToast(_T("Goto #"));
+					}
+					else
+					{
+						SetToast(_T("Goto Image#"));
+					}
 				}
 			}
 			else
@@ -3417,6 +3448,10 @@ void CMainDlg::GotoImage(EImagePosition ePos) {
 	GotoImage(ePos, 0);
 }
 
+/*
+* nFlags: KEEP_PARAMETERS et al flags;
+*         unless ePos==POS_Goto_Image_Num, then it is the image or page number to jump to
+*/
 void CMainDlg::GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq) {
 	LPCTSTR strPrevImage = m_pFileList->Current();
 	// Timer handling for slideshows
@@ -3585,7 +3620,7 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq) {
 		}
 		case POS_Next_Folder:
 		{
- 			m_pFileList = m_pFileList->NextFolder();
+			m_pFileList = m_pFileList->NextFolder();
 			if (m_pFileList)
 			{
 				SetToast("Jumped > " + m_pFileList->CurrentDirectoryNameShort());
@@ -3603,6 +3638,35 @@ void CMainDlg::GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq) {
 			}
 			break;
 		}
+		case POS_Goto_Image_Num:
+			//nFlags is new/desired image#
+			if (nFlags < 0)
+			{
+				m_pFileList->First();
+				SetToast(_T("Skipping to 1st, as invalid image #" + m_InputText));
+			}
+			else if (nFlags >= m_pFileList->Size())
+			{
+				m_pFileList->Last();
+				SetToast(_T("Skipping to last, as invalid image #" + m_InputText));
+			}
+			else
+			{
+				int curImageNum = m_pFileList->CurrentIndex();
+				if (nFlags == curImageNum) return;
+				if (nFlags < curImageNum)
+				{
+					for (; curImageNum > nFlags; --curImageNum)
+						m_pFileList = m_pFileList->Prev();
+				}
+				else
+				{
+					for (; curImageNum < nFlags; ++curImageNum)
+						m_pFileList = m_pFileList->Next();
+				}
+			}
+			nFlags = 0;
+			break;
 	}
 
 	if (bCheckIfSameImage && ((m_pFileList == pOldFileList)
