@@ -167,6 +167,7 @@ private:
 	bool m_bIsSlideShowList;
 	bool m_bWrapAroundFolder;
 	int m_nLevel, m_nMinFilesize;
+	bool m_bForceSorting;
 	bool m_bHideHidden;
 	bool m_bHideSameName;
 	CString m_sInitialFile;
