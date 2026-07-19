@@ -302,9 +302,7 @@ CImageLoadThread::~CImageLoadThread(void) {
 
 int CImageLoadThread::AsyncLoad(LPCTSTR strFileName, int nFrameIndex, const CProcessParams& processParams, HWND targetWnd, HANDLE eventFinished) {
 	CRequest* pRequest = new CRequest(strFileName, nFrameIndex, targetWnd, processParams, eventFinished);
-
 	ProcessAsync(pRequest);
-
 	return pRequest->RequestHandle;
 }
 

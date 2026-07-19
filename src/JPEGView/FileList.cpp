@@ -213,6 +213,7 @@ CFileList::CFileList(const CString & sInitialFile, CDirectoryWatcher & directory
 	int nMinFilesize, bool bHideHidden, bool bHideSameName)
 	: m_directoryWatcher(directoryWatcher),
 	m_nMinFilesize(nMinFilesize),
+	m_bForceSorting(forceSorting),
 	m_bHideHidden(bHideHidden),
 	m_bHideSameName(bHideSameName),
 	m_bFindingFiles(false),
@@ -1121,7 +1122,8 @@ CFileList* CFileList::TryCreateFileList(const CString& directory, int nNewLevel,
 		pList = pList->m_next;
 	}
 
-	CFileList* pNewList = new CFileList(directory, m_directoryWatcher, CFileDesc::GetSorting(), CFileDesc::IsSortedUpcounting(), m_bWrapAroundFolder, nNewLevel, m_bHideHidden);
+	CFileList* pNewList = new CFileList(directory, m_directoryWatcher, CFileDesc::GetSorting(), CFileDesc::IsSortedUpcounting(), m_bWrapAroundFolder, nNewLevel,
+		m_bForceSorting, m_nMinFilesize, m_bHideHidden, m_bHideSameName);
 	/*
 	* Async load folder will return 0 items initially and cause NextFolder() to fail!
 	* So force WaitIfNotReady.

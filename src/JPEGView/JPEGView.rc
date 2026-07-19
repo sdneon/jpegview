@@ -226,6 +226,17 @@ BEGIN
     CONTROL         "",IDC_PD_RB_22,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE,419,300,19,17
 END
 
+IDD_PASSWORD_DIALOG DIALOGEX 0, 0, 199, 80
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Password"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Password:",-1,10,10,60,10
+    EDITTEXT        IDC_EDIT_PASSWORD,10,30,180,14,ES_PASSWORD
+    DEFPUSHBUTTON   "OK",IDOK,85,60,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,60,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -515,7 +526,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "neon, sylikc et al"
             VALUE "FileDescription", "JPEGView"
-            VALUE "FileVersion", "1.2.92.0"
+            VALUE "FileVersion", "1.2.93.0"
             VALUE "InternalName", "JPEGView"
             VALUE "LegalCopyright", "Nah! neon 2025; Copyright 2020-2024 Kevin M (sylikc), 2006-2018 David Kleiner"
             VALUE "OriginalFilename", "JPEGView.exe"

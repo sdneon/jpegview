@@ -38,6 +38,7 @@ W		1101	//EXPLORE: open and select file in Explorer
 Ctrl+Shift+S	1501	//SAVE_SCREEN: save to file in screen size
 Ctrl+S		1502	//SAVE_ALLOW_NO_PROMPT: save to file in original size, allow override without prompt when enabled in INI
 Ctrl+R		1600	//RELOAD: reload image
+Ctrl+Shift+R    1601 //PURGE_PW_AND_RELOAD
 Ctrl+P		1700	//PRINT: print image
 Ctrl+C		2000	//COPY: copy image to clipboard in screen size
 Ctrl+X		2500	//COPY_FULL: copy image to clipboard in original size
@@ -63,10 +64,12 @@ PgDn		4000	//NEXT: go to next image
 Right		4000
 Alt+Right	4001	//NEXT_100: skip ahead 100 images
 Ctrl+Alt+Right	4002	//NEXT_FOLDER: go to next folder
+Alt+}	    4002
 Left		5000	//PREV: go to previous image
 PgUp		5000
 Alt+Left	5001	//PREV_100: skip back 100 images
 Ctrl+Alt+Left	5002	//PREV_FOLDER: go to previous folder
+Alt+{	    5002
 Home		5100	//FIRST: go to first image
 End		5200	//LAST: go to last image
 F7		6000	//LOOP_FOLDER: toggle navigation mode between (a) loop through folder, and (b) auto (which is auto-select LOOP_RECURSIVELY or LOOP_SIBLINGS)
@@ -183,3 +186,6 @@ Alt+Dash	15301
 Alt+I		15302   //Invert/Negative Colours
 Ctrl+I		15303   //Toggle Invert/Negative Colours Mode
 //no_hotkey	16000	//CONTEXT_MENU: display context menu
+A           5004    //PREV_FRAME: goto previous frame, stops animation
+D           4004    //NEXT_FRAME: goto next frame, stops animation
+S           7397    //TOGGLE_ANIMATION

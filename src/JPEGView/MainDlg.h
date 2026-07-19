@@ -59,7 +59,8 @@ public:
 		//exit manga archive to next/previous image:
 		POS_Next_Image,
 		POS_Previous_Image,
-		POS_Goto_Image_Num
+		POS_Goto_Image_Num,
+		POS_PrevAnimation
 	};
 
 	CMainDlg(bool bForceFullScreen);
@@ -357,7 +358,9 @@ private:
 	CString m_strToast;
 	int m_nImageRetryCnt;
 	bool m_bMouseTracking;
-	bool m_bInputMode;
+	bool m_bInputMode,
+		m_bInputModeForPassword;
+	CString m_sPassword, m_sPasswordMask;
 	CString m_InputText;
 
 	void SetToast(LPCTSTR a_strToast, DWORD a_nDurationMs = 3000);
@@ -374,7 +377,7 @@ private:
 	void SetAsDefaultViewer();
 	void HandleUserCommands(uint32 virtualKeyCode);
 	void ExecuteUserCommand(CUserCommand* pUserCommand);
-	void GotoImage(EImagePosition ePos, int nFlags);
+	void GotoImage(EImagePosition ePos, int nFlags, bool bForceNewReq = false);
 	void AdjustLDC(int nMode, double dInc);
 	void AdjustGamma(double dFactor);
 	void AdjustContrast(double dInc);
@@ -414,6 +417,9 @@ private:
 	void StartAnimation();
 	void AdjustAnimationFrameTime();
 	void StopAnimation();
+
+	void PromptForPasswordIfNeeded(LPCTSTR a_pFilepath);
+	void ReloadImageWithPw(CString pw);
 	void ToggleAlwaysOnTop();
 	CSize ComputeAdjustments(CPoint& offsetsAdjusted, CPoint& offsetsInWin, CPoint& offsetsInImage, CSize& clippedSize);
 	void CropToSelection(bool bLossless);

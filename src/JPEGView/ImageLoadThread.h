@@ -117,6 +117,7 @@ private:
 	CString m_sLastZipFileName; // Only for ZIP files
 	int m_nZipCount;
 	std::vector<ZipEntry> zipEntries;
+	bool m_bZipNeedPassword;
 
 	virtual void ProcessRequest(CRequestBase& request);
 	virtual void AfterFinishProcess(CRequestBase& request);

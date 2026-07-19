@@ -22,7 +22,8 @@ JPEGView has built-in support the following formats:
 * Manga/comics container format: CBZ/CB7
   * And probably anything 7zip can open
     * [New] Krita (KRA)
-  * Valid within are a big subset of above image formats
+  * Valid within is a subset of above image formats
+  * [Experimental] Encrypted archives.
 * [New] Scalable Vector Graphics (SVG, SVGZ)
 * Many additional formats are supported by Windows Imaging Component (WIC)
 
@@ -55,6 +56,7 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
 * **Browse manga/comics**
   * Container format: CBZ/CB7. Within can be JXL, JPG, PNG, WEBP, AVIF/HEIF, QOI, BMP or RAW images; animation ignored.
   * Navigation keys page through images in archive instead of advancing to next file. See 'Navigation' section below.
+  * **[Experimental] Simple support for opening _encrypted_ archives**
 * *Default to panning mode*. Dedicated 'Selection mode' can be toggled via remapped 'S' hotkey.
    * Quick zoom to selection mode via remapped hotkey 'Z'.
    * Option for selection box to match image aspect ratio.
@@ -70,6 +72,10 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
      * **CTRL+<Left/Right arrow>**: Exit archive to previous/next image file.
      * **ALT+G**: Enter 'goto image number' mode (toast prompt appears), key in desired number and hit **<ENTER>** to jump to that image in archive. To cancel, hit **<ESCAPE>** or let entry timeout (toast disappears).
      * Changed to **SHIFT+M**: Toggle between marked image and current image.
+  * [New] **Navigate multi-frames image**
+    * **A**: goto previous frame, freeze animation
+    * **S**: freeze/resume animation
+    * **D**: goto next frame, freeze animation
 * Filter
   * Hide small images below `MinFilesize`. **ALT+M** to toggle and reload.
     * Enabled by default if MinFilesize > 0, but auto-disabled if 1st image opened is small (< MinFilesize).
@@ -99,6 +105,7 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
  * [NEW] **Inverse/Negative Colours**
    * **ALT+I**: toggle negative colours for current image only.
    * **CTRL+I**: toggle Negative Image Mode. Affects all images.
+ * Recognise more keys: `{` and `}`
 
 (Last selectively sync'd up to original's ~6 Jul 2024 updates, with occasional cherry picks going ahead from various authors including [nikai](https://github.com/aviscaerulea/jpegview-nt/)).
 
@@ -375,6 +382,39 @@ Support viewing manga/comics in CBZ archives from v1.2.60.
   * Pre-built bit7z DLL is without auto format detection! Thus, needed to build our own copy with BIT7Z_AUTO_FORMAT option enabled.
     * Building bit7z is reasonably easy. Use CMake to configure it with BIT7Z_AUTO_FORMAT enabled, and various options as desired. Generate VS project files and build.
 * Also check out KrokusPokus's [JPEGView_L fork](https://github.com/KrokusPokus/JPEGView_L) with enhancements comic reading and lineart.
+
+### Building bit7z
+* Download source codes from [bit7z Git](https://github.com/rikyoz/bit7z).
+* Use CMake to configure with `BIT7Z_AUTO_FORMAT` ticked, and generate VS project files.
+* Change compiler option to /MT (instead of MD) to avoid later JPEGView build conflict.
+
+### [Experimental] Simple support for opening **_encrypted_** archives
+* Available from v1.20.93. Partially tested on some combos, like fully encrypted zip vs content encrypted.
+* Password entry methods:
+  * via program argument input
+  ```
+  jpegview.exe /pw password image.png
+  ; OR
+  jpegview.exe /pw "password with spaces" image.png
+  ```
+  * via modified 'Goto comic page' input system, so only simple characters 'direct' from keyboard entry.
+    * Can switch to password entry in dialog box.
+* Password is remembered for subsequent files in this session only. Never saved to disk.
+* If no or wrong password is provided, will Not ask for password again.
+  * **CTRL+SHIFT+R**: Purge password and reload image. Use to re-enter password, especially for another archive with different password.
+    * Known issue: sometimes fails to trigger. Related to image cache issue (#1). 
+* Hacky implementation owing to complicated async image loading (#1) via several classes.
+  1. CJPEGImage provides a 'X' (5x5 px) as placeholder initially, when image read fails from wrong passsword.
+  2. CMainDlg triggers password input mode.
+     * **CTRL+S**: temporarily show/reveal password entered thus far.
+     * **ENTER**: finish input and reload image.
+     * **ESC** or timeout (lasts as long as password prompt/toast on screen): cancel.
+     * **TAB**: switch to password entry in dialog box.
+  3. CMainDlg re-requests image upon receiving password input.
+  * #1. CJPEGProvider has a complicated and weird system of cached _requests_ to retrieve images.
+    * Its `NotifyNotUsed(CJPEGImage* pImage)` does nothing when image is NULL, when it should perhaps have been `NotifyNotUsed(filepath, frameIndex)`.
+* No longer use miniz; switched to bit7z fully as bit7z supports decryption, but not miniz. Hopefully, it doesn't break reading zips, as there may have been some issue in the past for using miniz in lieu of bit7z for zips.
+* For [this suggestion](https://github.com/sylikc/jpegview/issues/301).
 
 ## Scalable Vector Graphics & PDF Document
 Support SVG from v1.2.90, thanks to nikai/aviscaerulea's [jpegview-nt fork](https://github.com/aviscaerulea/jpegview-nt/).

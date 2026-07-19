@@ -350,6 +350,12 @@ public:
 	// Debug: Unsharp mask time of image in ms
 	double GetUnsharpMaskTickCount() { return m_dUnsharpMaskTickCount; }
 
+	static CJPEGImage* GetPlaceholder();
+
+	//[Experimental]
+	bool m_bIsPlaceHolder,
+		m_bAwaitPassword;
+
 private:
 
 	// used internally for re-sampling type

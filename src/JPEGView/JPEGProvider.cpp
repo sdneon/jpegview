@@ -33,7 +33,7 @@ CJPEGProvider::~CJPEGProvider(void) {
 
 CJPEGImage* CJPEGProvider::RequestImage(CFileList* pFileList, EReadAheadDirection eDirection,
                                         LPCTSTR strFileName, int nFrameIndex, const CProcessParams & processParams,
-                                        bool& bOutOfMemory, bool& bExceptionError) {
+                                        bool& bOutOfMemory, bool& bExceptionError, bool bForceNewReq) {
 	if (strFileName == NULL) {
 		bOutOfMemory = false;
 		bExceptionError = false;
@@ -41,7 +41,9 @@ CJPEGImage* CJPEGProvider::RequestImage(CFileList* pFileList, EReadAheadDirectio
 	}
 
 	// Search if we have the requested image already present or in progress
-	CImageRequest* pRequest = FindRequest(strFileName, nFrameIndex);
+	CImageRequest* pRequest = 0;
+	if (!bForceNewReq)
+		pRequest = FindRequest(strFileName, nFrameIndex);
 	bool bDirectionChanged = eDirection != m_eOldDirection || eDirection == TOGGLE;
 	bool bRemoveAlsoActiveRequests = bDirectionChanged; // if direction changed, all read-ahead requests are wrongly guessed
 	bool bWasOutOfMemory = false;

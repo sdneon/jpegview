@@ -73,11 +73,13 @@ CJPEGImage::CJPEGImage(int nWidth, int nHeight, void* pPixels, void* pEXIFData, 
 
 CJPEGImage::CJPEGImage(int nWidth, int nHeight, void* pPixels, void* pEXIFData, int nChannels, __int64 nJPEGHash,
 	EImageFormat eImageFormat, EImageFormat eContainerFormat, bool bIsAnimation, int nFrameIndex, int nNumberOfFrames, int nFrameTimeMs,
-	CLocalDensityCorr * pLDC, bool bIsThumbnailImage, CRawMetadata * pRawMetadata)
+	CLocalDensityCorr* pLDC, bool bIsThumbnailImage, CRawMetadata* pRawMetadata)
 	: m_rotationParams{ 0 },
 	m_fColorCorrectionFactorsNull{ 0 },
 	m_bColoursInverted(false),
-	m_eContainerFormat(eContainerFormat)
+	m_eContainerFormat(eContainerFormat),
+	m_bIsPlaceHolder(false),
+	m_bAwaitPassword(false)
 {
 	if (nChannels == 3 || nChannels == 4) {
 		m_pOrigPixels = pPixels;
@@ -167,6 +169,24 @@ CJPEGImage::CJPEGImage(int nWidth, int nHeight, void* pPixels, void* pEXIFData, 
 
 	// Initialize to INI value, may be overriden later by parameter DB
 	memcpy(m_fColorCorrectionFactors, CSettingsProvider::This().ColorCorrectionAmounts(), sizeof(m_fColorCorrectionFactors));
+}
+
+CJPEGImage* CJPEGImage::GetPlaceholder()
+{
+	//5x5 pixels 'X'
+	uint32_t placeHolder[9] = {
+		0x00FFFFFF, 0x00000000, 0x00FFFFFF,
+		0x00000000, 0x00FFFFFF, 0x00000000,
+		0x00FFFFFF, 0x00000000, 0x00FFFFFF
+	};
+	size_t size = sizeof(placeHolder);
+	char* pPixels = new char[size];
+	memcpy_s(pPixels, size, placeHolder, size);
+	CJPEGImage *image = new CJPEGImage(3, 3, pPixels, 0, 4,
+		0, IF_JPEG, false, 0, 1, 0);
+	image->m_bIsPlaceHolder = true;
+	image->m_bAwaitPassword = true;
+	return image;
 }
 
 CJPEGImage::~CJPEGImage(void) {

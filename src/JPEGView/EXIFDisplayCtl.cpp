@@ -109,7 +109,8 @@ void CEXIFDisplayCtl::FillEXIFDataDisplay() {
 		sPrefix = sCurrentFileName;
 	} else if (pFileList->Current() != NULL) {
 		sPrefix.Format(_T("[%d/%d]"), pFileList->CurrentIndex() + 1, pFileList->Size());
-		if (pImage->IsContainer())
+		if (pImage->IsContainer()
+			|| (pImage->IsAnimation() && !m_pMainDlg->IsPlayingAnimation()))
 		{
 			int numFrames = pImage->NumberOfFrames();
 			if (numFrames > 1)
