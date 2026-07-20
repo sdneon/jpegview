@@ -190,7 +190,8 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_bNegativeMode(false),
 	m_bTempSingleNegative(false),
 	m_bInputMode(false),
-	m_bInputModeForPassword(false)
+	m_bInputModeForPassword(false),
+	m_nCustomAnimFrameIntervalMs(-1)
 {
 	CSettingsProvider& sp = CSettingsProvider::This();
 
@@ -2620,6 +2621,57 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 				GotoImage(POS_NextAnimation);
 			}
 			break;
+		case IDM_ANIM_DEC_INTERVAL:
+			if (!m_pCurrentImage->IsAnimation())
+				break;
+			if (m_nCustomAnimFrameIntervalMs < 0)
+			{
+				m_nCustomAnimFrameIntervalMs = m_pCurrentImage->FrameTimeMs();
+			}
+			{
+				int animFrameIntervalInc = CSettingsProvider::This().AnimIntervalInc();
+				if (m_nCustomAnimFrameIntervalMs > (animFrameIntervalInc + 1))
+				{
+					m_nCustomAnimFrameIntervalMs -= animFrameIntervalInc;
+					char buf[20];
+					itoa(m_nCustomAnimFrameIntervalMs, buf, 10);
+					SetToast(_T("(-) Frame Interval (ms): ") + CString(buf));
+					StopAnimation();
+					StartAnimation();
+				}
+			}
+			break;
+		case IDM_ANIM_INC_INTERVAL:
+			if (!m_pCurrentImage->IsAnimation())
+				break;
+			if (m_nCustomAnimFrameIntervalMs < 0)
+			{
+				m_nCustomAnimFrameIntervalMs = m_pCurrentImage->FrameTimeMs();
+			}
+			m_nCustomAnimFrameIntervalMs += CSettingsProvider::This().AnimIntervalInc();
+			{
+				char buf[20];
+				itoa(m_nCustomAnimFrameIntervalMs, buf, 10);
+				SetToast(_T("(+) Frame Interval (ms): ") + CString(buf));
+				StopAnimation();
+				StartAnimation();
+			}
+			break;
+		case IDM_ANIM_RESET_INTERVAL:
+			if (!m_pCurrentImage->IsAnimation())
+				break;
+			m_nCustomAnimFrameIntervalMs = -1;
+			{
+				char buf[20];
+				if (m_pCurrentImage)
+				{
+					itoa(m_pCurrentImage->FrameTimeMs(), buf, 10);
+					SetToast(_T("(Reset) Frame Interval (ms): ") + CString(buf));
+					StopAnimation();
+					StartAnimation();
+				}
+			}
+			break;
 		case IDM_PREV_FRAME:
 			if (m_pCurrentImage != NULL && m_pCurrentImage->IsAnimation()) {
 				if (m_bIsAnimationPlaying)
@@ -4927,7 +4979,8 @@ void CMainDlg::StartAnimation() {
 	m_bLandscapeMode = false;
 	m_bIsAnimationPlaying = true;
 	int nNewFrameTime = max(10, m_pCurrentImage->FrameTimeMs());
-	::SetTimer(this->m_hWnd, ANIMATION_TIMER_EVENT_ID, nNewFrameTime, NULL);
+	::SetTimer(this->m_hWnd, ANIMATION_TIMER_EVENT_ID,
+		(m_nCustomAnimFrameIntervalMs < 0)? nNewFrameTime: m_nCustomAnimFrameIntervalMs, NULL);
 	m_pNavPanelCtl->EndNavPanelAnimation();
 	m_nLastSlideShowImageTickCount = ::GetTickCount();
 	m_nLastAnimationOffset = 0;

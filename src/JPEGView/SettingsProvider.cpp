@@ -221,6 +221,7 @@ CSettingsProvider::CSettingsProvider(void) {
 	m_bCreateParamDBEntryOnSave = GetBool(_T("CreateParamDBEntryOnSave"), true);
 	m_bWrapAroundFolder = GetBool(_T("WrapAroundFolder"), true);
 	m_bWindowAlwaysOnTopOnStartup = GetBool(_T("WindowAlwaysOnTopOnStartup"), false);
+	m_nAnimIcrementMs = GetInt(_T("AnimationFrameIntervalIncrement"), 50, 0, 6553500);
 	m_zoomPauseFactor = GetInt(_T("ZoomPausePercent"), 100, 0, 6553500) / 100.0;  // can't have a % larger than the MAX_IMAGE_DIMENSION %, and convert to a scale factor (double/double division) only once
 	m_dZoomOnClickFactor = GetDouble(_T("ClickToZoomFactor"), 4.0, -1.0, 100.0);
 	if (m_dZoomOnClickFactor <= 1.0)

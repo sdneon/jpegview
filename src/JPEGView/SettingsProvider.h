@@ -80,6 +80,7 @@ public:
 	bool SingleFullScreenInstance() { return m_bSingleFullScreenInstance; }
 	int JPEGSaveQuality() { return m_nJPEGSaveQuality; }
 	int WEBPSaveQuality() { return m_nWEBPSaveQuality; }
+	int AnimIntervalInc() { return m_nAnimIcrementMs; }
 	LPCTSTR DefaultSaveFormat() { return m_sDefaultSaveFormat; }
 	LPCTSTR FilesProcessedByWIC() { return m_sFilesProcessedByWIC; }
 	LPCTSTR FileEndingsRAW() { return m_sFileEndingsRAW; }
@@ -317,6 +318,7 @@ private:
 	int m_zoomPauseFactor;
 	double m_dZoomOnClickFactor;
 	bool m_bWindowAlwaysOnTopOnStartup;
+	int m_nAnimIcrementMs;
 
 	std::list<CUserCommand*> m_userCommands;
 	std::list<CUserCommand*> m_openWithCommands;

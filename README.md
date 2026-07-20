@@ -76,6 +76,9 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
     * **A**: goto previous frame, freeze animation
     * **S**: freeze/resume animation
     * **D**: goto next frame, freeze animation
+    * **ALT+A**: decrement frame interval, resume animation
+    * **ALT+S**: reset frame interval, resume animation
+    * **ALT+D**: increment frame interval, resume animation
 * Filter
   * Hide small images below `MinFilesize`. **ALT+M** to toggle and reload.
     * Enabled by default if MinFilesize > 0, but auto-disabled if 1st image opened is small (< MinFilesize).
@@ -92,6 +95,7 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
     * Added `Auto` folder navigation mode to auto-choose `LoopSubFolders` (if initial folder has subfolder) or `LoopSameFolderLevel` (otherwise).
       * Command# 6000 (LOOP_FOLDER, hotkey: F7) now toggles between `LoopFolder` and `Auto`.
     * Set `MinFilesize > 0` to Hide of small images. It auto-disables temporarily if 1st image opened is small (< MinFilesize), so as to view that image as intended.
+    * `AnimationFrameIntervalIncrement` in milliseconds: amount to add or subtract from frame interval of multi-frames image,
   * [Experimental]: include a mod of [mez0ru's PR for quick image show despite large folder](https://github.com/sylikc/jpegview/pull/172)
   * Span _nearly_ all monitors.
     * No change:

@@ -189,3 +189,6 @@ Ctrl+I		15303   //Toggle Invert/Negative Colours Mode
 A           5004    //PREV_FRAME: goto previous frame, stops animation
 D           4004    //NEXT_FRAME: goto next frame, stops animation
 S           7397    //TOGGLE_ANIMATION
+Alt+A       7601    //ANIM_DEC_INTERVAL: decrement frame interval of multi-frames image 
+Alt+D       7602    //ANIM_INC_INTERVAL: increment frame interval of multi-frames image 
+Alt+S       7603    //ANIM_RESET_INTERVAL: reset frame interval of multi-frames image 
