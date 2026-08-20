@@ -293,6 +293,21 @@ BEGIN
         BEGIN
             MENUITEM "_empty_",                     IDM_ABOUT
         END
+        POPUP "Recents"
+        BEGIN
+            MENUITEM "#&1", IDM_RECENT_1
+            MENUITEM "#&2", IDM_RECENT_2
+            MENUITEM "#&3", IDM_RECENT_3
+            MENUITEM "#&4", IDM_RECENT_4
+            MENUITEM "#&5", IDM_RECENT_5
+            MENUITEM "#&6", IDM_RECENT_6
+            MENUITEM "#&7", IDM_RECENT_7
+            MENUITEM "#&8", IDM_RECENT_8
+            MENUITEM "#&9", IDM_RECENT_9
+            MENUITEM "#1&0", IDM_RECENT_10
+            MENUITEM SEPARATOR
+            MENUITEM "Purge Recents", IDM_PURGE_RECENTS
+        END
         MENUITEM "Save processed image...\t0x5de", IDM_SAVE
         MENUITEM "Reload image",                IDM_RELOAD
         MENUITEM "Open containing folder in Explorer", IDM_EXPLORE
@@ -508,8 +523,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,90,0
- PRODUCTVERSION 1,2,90,0
+ FILEVERSION 1,2,94,0
+ PRODUCTVERSION 1,2,94,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -526,12 +541,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "neon, sylikc et al"
             VALUE "FileDescription", "JPEGView"
-            VALUE "FileVersion", "1.2.93.0"
+            VALUE "FileVersion", "1.2.94.0"
             VALUE "InternalName", "JPEGView"
             VALUE "LegalCopyright", "Nah! neon 2025; Copyright 2020-2024 Kevin M (sylikc), 2006-2018 David Kleiner"
             VALUE "OriginalFilename", "JPEGView.exe"
             VALUE "ProductName", "JPEGView Application (Mod)"
-            VALUE "ProductVersion", "1.2.92.0"
+            VALUE "ProductVersion", "1.2.94.0"
         END
     END
     BLOCK "VarFileInfo"

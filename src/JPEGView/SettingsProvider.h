@@ -75,6 +75,7 @@ public:
 	int MinFilesize() { return m_nMinFilesize; }
 	bool HideHidden() { return m_bHideHidden; }
 	bool HideSameName() { return m_bHideSameName; }
+	bool Recents() { return m_bRecents; }
 	bool ForceGDIPlus() { return m_bForceGDIPlus; }
 	bool SingleInstance() { return m_bSingleInstance; }
 	bool SingleFullScreenInstance() { return m_bSingleFullScreenInstance; }
@@ -255,6 +256,7 @@ private:
 	int m_nMinFilesize;
 	bool m_bHideHidden;
 	bool m_bHideSameName;
+	bool m_bRecents;
 	bool m_bForceGDIPlus;
 	bool m_bSingleInstance;
 	bool m_bSingleFullScreenInstance;

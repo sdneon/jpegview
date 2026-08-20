@@ -3,7 +3,7 @@
 // Used by JPEGView.RC
 //
 
-#define JPEGVIEW_VERSION "1, 2, 92, 0\0"
+#define JPEGVIEW_VERSION "1, 2, 94, 0\0"
 // title for main window and msgbox so it can be change via actions
 #define JPEGVIEW_TITLE "JPEGView"
 
@@ -332,6 +332,18 @@
 #define IDM_CROPMODE_IMAGE  20899
 #define IDM_CROPMODE_USER	20900
 
+#define IDM_RECENT_1        21001
+#define IDM_RECENT_2        21002
+#define IDM_RECENT_3        21003
+#define IDM_RECENT_4        21004
+#define IDM_RECENT_5        21005
+#define IDM_RECENT_6        21006
+#define IDM_RECENT_7        21007
+#define IDM_RECENT_8        21008
+#define IDM_RECENT_9        21009
+#define IDM_RECENT_10       21010
+#define IDM_PURGE_RECENTS   21011
+
 #define IDM_FIRST_USER_CMD  22000
 #define IDM_LAST_USER_CMD   22099
 
@@ -341,17 +353,18 @@
 // in the main menu
 // these position must be changed if menu items are inserted
 #define SUBMENU_POS_OPENWITH 3
-#define SUBMENU_POS_MODDATE 9
-#define SUBMENU_POS_WALLPAPER 10
-#define SUBMENU_POS_NAVIGATION 23
-#define SUBMENU_POS_DISPLAY_ORDER 24
-#define SUBMENU_POS_MOVIE 25
-#define SUBMENU_POS_TRANSFORM 27
-#define SUBMENU_POS_TRANSFORM_LOSSLESS 28
-#define SUBMENU_POS_ZOOM 36
-#define SUBMENU_POS_AUTOZOOMMODE 37
-#define SUBMENU_POS_SETTINGS 39
-#define SUBMENU_POS_USER_COMMANDS 41
+#define SUBMENU_POS_RECENTS 4
+#define SUBMENU_POS_MODDATE 10
+#define SUBMENU_POS_WALLPAPER 11
+#define SUBMENU_POS_NAVIGATION 24
+#define SUBMENU_POS_DISPLAY_ORDER 25
+#define SUBMENU_POS_MOVIE 26
+#define SUBMENU_POS_TRANSFORM 28
+#define SUBMENU_POS_TRANSFORM_LOSSLESS 29
+#define SUBMENU_POS_ZOOM 37
+#define SUBMENU_POS_AUTOZOOMMODE 38
+#define SUBMENU_POS_SETTINGS 40
+#define SUBMENU_POS_USER_COMMANDS 42
 
 // in the crop menu
 #define SUBMENU_POS_CROPMODE 3

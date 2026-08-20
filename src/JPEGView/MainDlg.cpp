@@ -54,6 +54,7 @@
 #include "DesktopWallpaper.h"
 #include "PrintImage.h"
 #include "PwDlg.h"
+#include "IniReader.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Constants
@@ -305,6 +306,9 @@ CMainDlg::CMainDlg(bool bForceFullScreen):
 	m_pNavPanelCtl = NULL;
 	m_pCropCtl = new CCropCtl(this);
 	m_pKeyMap = new CKeyMap(CString(CSettingsProvider::This().GetEXEPath()) + _T("KeyMap.txt"));
+	// don't even touch recents.txt on disk when the feature is disabled in JPEGView.ini
+	m_pRecents = CSettingsProvider::This().Recents() ?
+		new CIniManager(CString(CSettingsProvider::This().GetEXEPath()) + _T("recents.txt")) : NULL;
 	m_pPrintImage = new CPrintImage(CSettingsProvider::This().PrintMargin(), CSettingsProvider::This().DefaultPrintWidth());
 	m_pHelpDlg = NULL;
 }
@@ -1677,7 +1681,8 @@ LRESULT CMainDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 				_tcsncat_s(buff, BUFF_SIZE, _T("\\"), BUFF_SIZE);
 			}
 			m_sPrevStartupFile = m_sStartupFile;
-			OpenFile(buff, false);
+			// dropped manually by the user - add it to the Recents list (trailing slash above ensures folders reopen correctly, see AddToRecents)
+			OpenFile(buff, false, true);
 		}
 		::DragFinish(hDrop);
 	}
@@ -1807,6 +1812,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	HMENU hMenuUserCommands = ::GetSubMenu(hMenuTrackPopup, SUBMENU_POS_USER_COMMANDS);
 	HMENU hMenuOpenWithCommands = ::GetSubMenu(hMenuTrackPopup, SUBMENU_POS_OPENWITH);
 	HMENU hMenuWallpaper = ::GetSubMenu(hMenuTrackPopup, SUBMENU_POS_WALLPAPER);
+	HMENU hMenuRecents = ::GetSubMenu(hMenuTrackPopup, SUBMENU_POS_RECENTS);
 
 	if (!HelpersGUI::CreateUserCommandsMenu(hMenuUserCommands)) {
 		::DeleteMenu(hMenuTrackPopup, SUBMENU_POS_USER_COMMANDS + 1, MF_BYPOSITION);
@@ -1895,6 +1901,44 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		// Delete the 'Stop movie' menu entry if no movie is playing
 		::DeleteMenu(hMenuTrackPopup, 0, MF_BYPOSITION);
 		::DeleteMenu(hMenuTrackPopup, 0, MF_BYPOSITION);
+	}
+	if (m_pRecents == NULL) {
+		// Recents feature disabled in JPEGView.ini - remove the whole submenu.
+		// Look up its *current* position dynamically (rather than trusting SUBMENU_POS_RECENTS here,
+		// which is stale by this point due to the movie-mode item deletion above).
+		int nItemCount = ::GetMenuItemCount(hMenuTrackPopup);
+		for (int p = 0; p < nItemCount; ++p) {
+			if (::GetSubMenu(hMenuTrackPopup, p) == hMenuRecents) {
+				::DeleteMenu(hMenuTrackPopup, p, MF_BYPOSITION);
+				break;
+			}
+		}
+	} else {
+		bool endOfList = false;
+		bool bAnyRecents = false;
+		for (int i = 0; i < 10; ++i)
+		{
+			CString recentPath = m_pRecents->GetString(i, _T(""));
+			if (endOfList || (recentPath.GetLength() <= 0))
+			{
+				endOfList = true;
+				::EnableMenuItem(hMenuRecents, i, MF_BYPOSITION | MF_GRAYED);
+			}
+			else
+			{
+				bAnyRecents = true;
+				::EnableMenuItem(hMenuRecents, i, MF_BYPOSITION | MF_ENABLED);
+				int nDisplayNum = i + 1;
+				CString sMenuText;
+				if (nDisplayNum < 10)
+					sMenuText.Format(_T("&%d. %s"), nDisplayNum, (LPCTSTR)recentPath);
+				else
+					sMenuText.Format(_T("1&0. %s"), (LPCTSTR)recentPath); // matches the '&' position used by the static #1&0 placeholder in the .rc
+				UINT id = IDM_RECENT_1 + i;
+				::ModifyMenuW(hMenuRecents, i, MF_BYPOSITION | MF_STRING, id, sMenuText);
+			}
+		}
+		::EnableMenuItem(hMenuRecents, IDM_PURGE_RECENTS, MF_BYCOMMAND | (bAnyRecents ? MF_ENABLED : MF_GRAYED));
 	}
 
 	int nMenuCmd = TrackPopupMenu(CPoint(nX, nY), hMenuTrackPopup);
@@ -3128,6 +3172,32 @@ void CMainDlg::ExecuteCommand(int nCommand) {
 		case IDC_SINGLE_ZOOM:
 			m_bSingleZoom = true;
 			break;
+		case IDM_RECENT_1:
+		case IDM_RECENT_2:
+		case IDM_RECENT_3:
+		case IDM_RECENT_4:
+		case IDM_RECENT_5:
+		case IDM_RECENT_6:
+		case IDM_RECENT_7:
+		case IDM_RECENT_8:
+		case IDM_RECENT_9:
+		case IDM_RECENT_10:
+		{
+			if (m_pRecents != NULL) {
+				CString sRecentPath = m_pRecents->GetString(nCommand - IDM_RECENT_1, _T(""));
+				if (!sRecentPath.IsEmpty()) {
+					// triggered from the Recents menu itself - do not re-add/reorder the list
+					OpenFile(sRecentPath, false);
+				}
+			}
+			break;
+		}
+		case IDM_PURGE_RECENTS:
+			if (m_pRecents != NULL) {
+				m_pRecents->ClearSection();
+				SetToast(_T("Recents cleared"));
+			}
+			break;
 	}
 	if (nCommand >= IDM_FIRST_USER_CMD && nCommand <= IDM_LAST_USER_CMD) {
 		ExecuteUserCommand(HelpersGUI::FindUserCommand(nCommand - IDM_FIRST_USER_CMD));
@@ -3168,14 +3238,15 @@ bool CMainDlg::OpenFileWithDialog(bool bFullScreen, bool bAfterStartup) {
 		m_sPrevStartupFile = m_sStartupFile;
 		m_sStartupFile = dlgOpen.m_szFileName;
 		DetermineInitMinFilesizeMode();
-		OpenFile(dlgOpen.m_szFileName, bAfterStartup);
+		// manually picked via the file open dialog - add it to the Recents list
+		OpenFile(dlgOpen.m_szFileName, bAfterStartup, true);
 		return true;
 	}
 	m_isBeforeFileSelected = false;
 	return false;
 }
 
-void CMainDlg::OpenFile(LPCTSTR sFileName, bool bAfterStartup) {
+void CMainDlg::OpenFile(LPCTSTR sFileName, bool bAfterStartup, bool bAddToRecents) {
 	StopMovieMode();
 	StopAnimation();
 	// recreate file list based on image opened
@@ -3205,6 +3276,36 @@ void CMainDlg::OpenFile(LPCTSTR sFileName, bool bAfterStartup) {
 	m_sSaveDirectory = _T("");
 	MouseOff();
 	this->Invalidate(FALSE);
+	if (bAddToRecents) {
+		AddToRecents(sFileName);
+	}
+}
+
+// Insert sFileName at the front of the Recents list (FIFO, most recent first, no duplicates, capped at 10 entries)
+void CMainDlg::AddToRecents(LPCTSTR sFileName) {
+	if (m_pRecents == NULL || sFileName == NULL || sFileName[0] == 0) {
+		return;
+	}
+	const int MAX_RECENTS = 10;
+	CString sNewPath(sFileName);
+	CString existing[MAX_RECENTS];
+	int nCount = 0;
+	for (int i = 0; i < MAX_RECENTS; ++i) {
+		CString sPath = m_pRecents->GetString(i, _T(""));
+		if (sPath.IsEmpty()) {
+			break;
+		}
+		if (sPath.CompareNoCase(sNewPath) != 0) {
+			existing[nCount++] = sPath;
+		}
+	}
+	m_pRecents->WriteString(_T("0"), sNewPath);
+	for (int i = 0; i < nCount && i < MAX_RECENTS - 1; ++i) {
+		CString sKey;
+		sKey.Format(_T("%d"), i + 1);
+		m_pRecents->WriteString(sKey, existing[i]);
+	}
+	m_pRecents->Invalidate();
 }
 
 void CMainDlg::OpenPrevAlbumIfAny()

@@ -303,6 +303,12 @@
     <ClCompile Include="PwDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="IniReader.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IniManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicProcessing.h">

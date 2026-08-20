@@ -206,6 +206,7 @@ CSettingsProvider::CSettingsProvider(void) {
 	}
 	m_bHideHidden = GetBool(_T("HideHidden"), false);
 	m_bHideSameName = GetBool(_T("HideSameName"), false);
+	m_bRecents = GetBool(_T("Recents"), false);
 
 	m_bForceGDIPlus = GetBool(_T("ForceGDIPlus"), false);
 	m_bSingleInstance = GetBool(_T("SingleInstance"), false);

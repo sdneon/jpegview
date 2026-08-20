@@ -30,6 +30,7 @@ class CDirectoryWatcher;
 class CUserCommand;
 class CPrintImage;
 class CHelpDlg;
+class CIniManager;
 
 enum EMouseEvent;
 
@@ -337,6 +338,7 @@ private:
 	CTiltCorrectionPanelCtl* m_pTiltCorrectionPanelCtl;
 	CPanelMgr* m_pPanelMgr;
 	CKeyMap* m_pKeyMap;
+	CIniManager* m_pRecents;
 	CPrintImage* m_pPrintImage;
 	CHelpDlg* m_pHelpDlg;
 	Helpers::ETransitionEffect m_eTransitionEffect;
@@ -369,7 +371,8 @@ private:
 	void ToastSortingMode(Helpers::ESorting nSortMode, bool bUpCounting);
 	void ExploreFile();
 	bool OpenFileWithDialog(bool bFullScreen, bool bAfterStartup);
-	void OpenFile(LPCTSTR sFileName, bool bAfterStartup);
+	void OpenFile(LPCTSTR sFileName, bool bAfterStartup, bool bAddToRecents = false);
+	void AddToRecents(LPCTSTR sFileName);
 	void OpenPrevAlbumIfAny();
 	bool SaveImage(bool bFullSize);
 	bool SaveImageNoPrompt(LPCTSTR sFileName, bool bFullSize);

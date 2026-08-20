@@ -79,6 +79,7 @@ Basic on-the-fly image processing is provided - allowing adjusting typical param
     * **ALT+A**: decrement frame interval, resume animation
     * **ALT+S**: reset frame interval, resume animation
     * **ALT+D**: increment frame interval, resume animation
+  * [New] **Recents images/folders list** (max: 10). Enable via `Recents` setting (def: disabled). For [this](https://github.com/sylikc/jpegview/issues/397).
 * Filter
   * Hide small images below `MinFilesize`. **ALT+M** to toggle and reload.
     * Enabled by default if MinFilesize > 0, but auto-disabled if 1st image opened is small (< MinFilesize).
