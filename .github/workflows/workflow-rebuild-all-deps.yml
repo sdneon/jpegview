@@ -1,0 +1,46 @@
+name: Reusable - Rebuild All Libs
+# This reusable workflow rebuilds all binary dependencies.  While you can pass in a build-config, only 'Release' configuration is supported because all libraries are built in release configuration.
+
+# NOTE: we don't replace any header files here... or anything else, ONLY binaries, so if there's a broken build, it could be caused by those things... and that ought to be updated in the source directly
+
+on:
+  workflow_call:
+    inputs:
+      platform-arch:
+        required: true
+        type: string
+
+      build-config:
+        required: false
+        type: string
+        default: Release
+
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout code with all Submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v2
+      with:
+        msbuild-architecture: ${{ inputs.platform-arch }}
+
+    - uses: ./.github/actions/setup-wix
+
+    - uses: ./.github/actions/bin-cache
+
+    - uses: ./.github/actions/build-solution
+      with:
+        platform-arch: ${{ inputs.platform-arch }}
+        build-config: ${{ inputs.build-config }}
+
+    - uses: ./.github/actions/upload-some-artifacts
+      with:
+        platform-arch: ${{ inputs.platform-arch }}
+        build-config: ${{ inputs.build-config }}

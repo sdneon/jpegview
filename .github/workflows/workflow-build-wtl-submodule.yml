@@ -28,19 +28,14 @@ on:
 
 jobs:
   build:
-    # if windows-latest, might not find VS 2019
-    runs-on: windows-2019
-
+    runs-on: windows-2022
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup msbuild
-      # https://github.com/marketplace/actions/setup-msbuild
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
-        # Fixed on Visual Studio 2019 -- https://docs.microsoft.com/en-us/visualstudio/releases/2019/history
-        vs-version: '[16.0,17.0)'
         msbuild-architecture: ${{ inputs.platform-arch }}
 
     # https://gist.github.com/hibearpanda/d5b5b58bd319132ffd7af606ffa333fc
